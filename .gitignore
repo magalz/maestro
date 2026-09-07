@@ -1,0 +1,54 @@
+# Private planning, installed agent tooling and uncleared branding
+.agents/
+.claude/
+.codex/
+_bmad/
+_bmad-output/
+branding/
+
+# Secrets (keep safe example environment files eligible for review)
+.env
+.env.*
+!.env.example
+.netrc
+.npmrc
+credentials.json
+service-account*.json
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Editors and operating systems
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Dependencies, generated output and caches; lockfiles remain tracked
+node_modules/
+target/
+dist/
+build/
+coverage/
+.cache/
+.npm/
+.turbo/
+__pycache__/
+.venv/
+*.tsbuildinfo
+
+# Local runtime state and audit output
+.maestro/
+docs/maestro/audit/
+*.log
+*.pid
+*.sqlite
+*.sqlite3
+*.sqlite-wal
+*.sqlite-shm
+*.sqlite3-wal
+*.sqlite3-shm
