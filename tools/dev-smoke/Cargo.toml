@@ -1,0 +1,6 @@
+[package]
+name = "maestro-dev-smoke"
+version = "0.0.0"
+edition = "2024"
+publish = false
+description = "Development toolchain smoke probe; not a Maestro product component"

@@ -1,8 +1,10 @@
 # Maestro
 
 Maestro's development repository: <https://github.com/magalz/maestro>.
-This repository currently contains setup documentation and exclusions only.
-There is no application, installed toolchain, CI or verified branch protection yet.
+This repository contains a pinned local development baseline and a minimal Rust
+smoke probe. Follow [the development guide](docs/development.md) to install the
+toolchain and run the checks. No product application or product tests exist yet;
+CI and verified branch protection are still pending.
 
 ## Obtain the repository
 

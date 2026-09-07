@@ -65,8 +65,10 @@ pass. A linked worktree is not an operating-system read-only boundary.
 
 ## Checks and merge policy
 
-This is the setup-only repository. Toolchain setup, executable checks, CI and
-branch protections are forthcoming; none is currently claimed as verified.
+Install the pinned tools and run `make install` and `make check` following
+[the development guide](docs/development.md). This remains a setup-only
+repository with no product tests. CI and branch protections are forthcoming;
+neither is currently claimed as verified.
 The initial empty-repository bootstrap contains only reviewed setup files and
 does not grant ongoing permission for direct pushes or bypasses.
 

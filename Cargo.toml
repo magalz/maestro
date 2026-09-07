@@ -1,0 +1,3 @@
+[workspace]
+members = ["tools/dev-smoke"]
+resolver = "3"
