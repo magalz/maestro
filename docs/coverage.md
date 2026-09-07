@@ -55,11 +55,26 @@ state. Fix the reported authentication/report issue, then rerun that intended
 workflow revision. Verify both a successful job and a processed report with its
 exact uploaded SHA; if the service remains queued or errored, acceptance is pending.
 
-Sonar remains untouched pending the owner's project decision; no Sonar analysis
-or quality gate is claimed.
+Sonar targets the approved `maestro` project (`magalz_maestro`, organization
+`magalz`) on its `main` branch. `.github/workflows/sonar.yml` reuses this script
+and imports the same setup-only report through `sonar.rust.lcov.reportPaths`.
+Only `tools/dev-smoke/src` is analyzed; private planning files are outside the
+source scope. The scanner retains its default Clippy analysis.
+
+Sonar runs only on pushes to `main` or manual dispatch on `main`; the job skips
+all other refs and has no PR trigger. The existing `SONAR_TOKEN` repository
+secret is passed only to the scan step. A preceding check tests only its
+presence and fails explicitly if missing, without printing the token.
+
+The workflow waits for the quality gate with `sonar.qualitygate.wait=true`.
+The first hosted analysis, processed report, and actual quality gate remain
+pending until human-accepted promotion to `main`; local coverage generation
+does not complete this integration. No Sonar check is required in branch policy.
 
 Sources: [Rust instrumentation](https://doc.rust-lang.org/rustc/instrument-coverage.html),
 [LLVM export](https://llvm.org/docs/CommandGuide/llvm-cov.html#llvm-cov-export),
 [Codecov OIDC](https://github.com/codecov/codecov-action/blob/fb8b3582c8e4def4969c97caa2f19720cb33a72f/README.md#using-oidc),
 [Codecov action release](https://github.com/codecov/codecov-action/releases/tag/v7.0.0),
-[Codecov CLI release](https://github.com/codecov/codecov-cli/releases/tag/v11.3.1).
+[Codecov CLI release](https://github.com/codecov/codecov-cli/releases/tag/v11.3.1),
+[Sonar Rust coverage parameters](https://docs.sonarsource.com/sonarqube-cloud/enriching/test-coverage/test-coverage-parameters),
+[Sonar Rust analysis](https://docs.sonarsource.com/sonarqube-cloud/advanced-setup/languages/rust).
