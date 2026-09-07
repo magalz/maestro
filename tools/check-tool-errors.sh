@@ -9,7 +9,7 @@ if PATH="$scratch" "$make_bin" check-tools >"$scratch/output" 2>&1; then
     echo 'Missing tooling unexpectedly passed.' >&2
     exit 1
 fi
-grep -q 'Missing rustup: follow docs/development.md' "$scratch/output"
+grep -q 'Missing rustup: follow docs/development.md' "$scratch/output" || { cat "$scratch/output" >&2; exit 1; }
 
 cat >"$scratch/node" <<'STUB'
 #!/bin/sh
@@ -20,5 +20,5 @@ if PATH="$scratch:$PATH" "$make_bin" check-tools >"$scratch/output" 2>&1; then
     echo 'Incorrect Node version unexpectedly passed.' >&2
     exit 1
 fi
-grep -q 'Expected Node 24.20.0' "$scratch/output"
+grep -q 'Expected Node 24.20.0' "$scratch/output" || { cat "$scratch/output" >&2; exit 1; }
 echo 'Tooling error checks passed.'
