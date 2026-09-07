@@ -1,3 +1,1 @@
-fn main() {
-    println!("Maestro development smoke probe passed.");
-}
+fn main(){println!("Maestro development smoke probe passed.");}

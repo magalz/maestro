@@ -50,10 +50,11 @@ the expected named tar. Unpack that tar into a new temporary directory only
 after inspecting its member names and types:
 
 ```bash
+set -euo pipefail
 # Set this to the downloaded, unpacked tar from the reviewed run.
 archive=/absolute/path/development-smoke-SOURCE-RUN-ATTEMPT.tar
 test "$(tar -tf "$archive")" = "$(printf '%s\n' maestro-dev-smoke BUILD.txt SHA256SUMS)"
-tar -tvf "$archive" # All three must be regular files; executable mode is 0755.
+test "$(tar -tvf "$archive" | cut -c 1)" = "$(printf '%s\n' - - -)"
 verification_dir=$(mktemp -d)
 tar --no-same-owner -xf "$archive" -C "$verification_dir"
 cd "$verification_dir"
