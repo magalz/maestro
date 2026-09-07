@@ -141,7 +141,10 @@ echo "Verified checkout: $clean_checkout"
 
 The `development-checks` CI job runs `make install` and `make check`, then
 rejects tracked changes after each command. See [CI documentation](ci.md) for
-revision and runner identities and outcome interpretation. Observed remote
-validation and branch protections remain pending; these local checks do not
-establish either. Follow [the contribution policy](../CONTRIBUTING.md)
-for development PRs and explicit human acceptance before promotion to `main`.
+revision and runner identities and outcome interpretation, plus the
+[merge policy and verification status](ci.md#merge-policy). Local checks do not
+establish remote CI success or branch-protection enforcement. Follow
+[the contribution policy](../CONTRIBUTING.md) for development PRs and explicit
+human acceptance before every merge. Promotion to `main` needs its own accepted
+PR and a merge commit; keep the linked `main` reference clean until an explicitly
+requested fast-forward refresh.

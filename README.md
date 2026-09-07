@@ -1,11 +1,17 @@
 # Maestro
 
+Setup guides: [development](docs/development.md), [CI and protections](docs/ci.md),
+[security integrations](docs/security.md), [artifacts](docs/artifacts.md),
+[setup-only coverage](docs/coverage.md).
+
 Maestro's development repository: <https://github.com/magalz/maestro>.
 This repository contains a pinned local development baseline and a minimal Rust
 smoke probe. Follow [the development guide](docs/development.md) to install the
-toolchain and run the checks. No product application or product tests exist yet;
-The [CI workflow](docs/ci.md) runs `development-checks`; observed remote
-validation and verified branch protection are still pending.
+toolchain and run the checks. No product application or product tests exist yet.
+The [CI workflow](docs/ci.md) runs `development-checks`.
+The [merge policy and verification status](docs/ci.md#merge-policy) distinguish
+the recorded protection configuration from observed enforcement. Both `main`
+and `dev` require PRs and explicit human acceptance before merging.
 
 ## Obtain the repository
 

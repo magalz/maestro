@@ -2,6 +2,7 @@
 .agents/
 .claude/
 .codex/
+.memdb/
 _bmad/
 _bmad-output/
 branding/
