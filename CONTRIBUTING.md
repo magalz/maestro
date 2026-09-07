@@ -70,16 +70,23 @@ Install the pinned tools and run `make install` and `make check` following
 repository with no product tests. The [CI workflow](docs/ci.md) schedules
 `development-checks` for PRs into and pushes to `dev` and `main`. Inspect its
 evaluated commit, PR head/base and run identity before treating a result as
-evidence. Observed remote validation and branch protections remain pending.
+evidence. See [merge policy and verification status](docs/ci.md#merge-policy)
+for the exact configuration and the operations exercised so far.
 The initial empty-repository bootstrap contains only reviewed setup files and
 does not grant ongoing permission for direct pushes or bypasses.
 
-The intended policy for both `dev` and `main` requires pull requests, current
-successful required checks against an up-to-date base, resolved conversations
-and explicit human review and merge. No routine bypass actors, force pushes or
-branch deletion are intended. The stable check name is `development-checks`;
-required-check enforcement will be documented after configuration and verification.
-Missing, skipped or cancelled checks are not
-successful checks. With one human maintainer, the initial policy requires no
-third-party approval review; AI review does not count as independent human
-approval. PR checks receive no publication or deployment secrets.
+The [protection payload](docs/branch-protection.json) is identical for `dev`
+and `main`: PRs, strict up-to-date checks from GitHub Actions (`development-checks`,
+app ID `15368`), resolved conversations and administrator enforcement, with no
+bypass users, teams or apps, force pushes or branch deletion. Push restrictions
+are null; required PRs still gate changes. Linear history is not required, so
+promotion and reconciliation can preserve ancestry with merge commits.
+
+Magal is the sole human maintainer. Required third-party approvals are zero;
+stale review dismissal is enabled, while code-owner and last-push approvals are
+disabled. Explicit human review and acceptance are still required before every
+successful merge, including setup PRs; GitHub's zero-approval count cannot
+enforce that human decision. AI review does not supply it. Record acceptance in
+the PR and merge only the reviewed, currently passing revision. Missing,
+pending, failing, skipped or cancelled checks are not success. PR checks receive
+no publication or deployment secrets; never enable automatic successful merges.

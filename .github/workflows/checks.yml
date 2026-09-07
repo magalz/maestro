@@ -58,3 +58,81 @@ jobs:
         run: |
           make check
           git diff --exit-code HEAD --
+
+  development-artifact:
+    name: development-artifact
+    needs: development-checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      RUSTUP_TOOLCHAIN: 1.98.1
+      CARGO_TARGET_DIR: ${{ runner.temp }}/artifact-target
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Check out evaluated revision
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Install pinned Rust toolchain
+        run: |
+          rustup toolchain install 1.98.1 --profile minimal --target x86_64-unknown-linux-gnu
+          test "$(uname -s)-$(uname -m)" = Linux-x86_64
+          case "$(rustc --version)" in 'rustc 1.98.1 '*) ;; *) exit 1 ;; esac
+          case "$(cargo --version)" in 'cargo 1.98.1 '*) ;; *) exit 1 ;; esac
+
+      - name: Build development smoke binary
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          cargo build --release --locked --package maestro-dev-smoke
+          git diff --exit-code HEAD --
+
+      - name: Package explicit development contents
+        id: package
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PR_BASE_REF: ${{ github.event.pull_request.base.ref }}
+        run: |
+          package_dir=$(mktemp -d "$RUNNER_TEMP/development-package.XXXXXX")
+          artifact_name="development-smoke-${GITHUB_SHA}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          test -x "$CARGO_TARGET_DIR/release/maestro-dev-smoke"
+          install -m 755 "$CARGO_TARGET_DIR/release/maestro-dev-smoke" "$package_dir/maestro-dev-smoke"
+          {
+            printf 'purpose=development setup evidence only; not product certification\n'
+            printf 'repository=%s\nevent=%s\nref=%s\nsource_sha=%s\n' "$GITHUB_REPOSITORY" "$GITHUB_EVENT_NAME" "$GITHUB_REF" "$(git rev-parse HEAD)"
+            printf 'pr=%s\npr_head_sha=%s\npr_base_sha=%s\npr_base_ref=%s\n' "$PR_NUMBER" "$PR_HEAD_SHA" "$PR_BASE_SHA" "$PR_BASE_REF"
+            printf 'workflow=%s\nworkflow_ref=%s\nworkflow_sha=%s\n' "$GITHUB_WORKFLOW" "$GITHUB_WORKFLOW_REF" "$GITHUB_WORKFLOW_SHA"
+            printf 'run_id=%s\nrun_attempt=%s\nrun_url=%s/%s/actions/runs/%s\n' "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$GITHUB_RUN_ID"
+            printf 'ImageOS=%s\nImageVersion=%s\nRUNNER_OS=%s\nRUNNER_ARCH=%s\n' "${ImageOS:?}" "${ImageVersion:?}" "$RUNNER_OS" "$RUNNER_ARCH"
+            rustc --version --verbose
+            cargo --version
+          } > "$package_dir/BUILD.txt"
+          cd "$package_dir"
+          sha256sum maestro-dev-smoke BUILD.txt > SHA256SUMS
+          sha256sum --check SHA256SUMS
+          tar -cf "$RUNNER_TEMP/$artifact_name.tar" maestro-dev-smoke BUILD.txt SHA256SUMS
+          printf 'name=%s\npath=%s\n' "$artifact_name" "$RUNNER_TEMP/$artifact_name.tar" >> "$GITHUB_OUTPUT"
+
+      - name: Retain development package
+        id: upload
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: ${{ steps.package.outputs.name }}
+          path: ${{ steps.package.outputs.path }}
+          retention-days: 7
+          if-no-files-found: error
+          overwrite: false
+
+      - name: Record retained artifact
+        env:
+          ARTIFACT_URL: ${{ steps.upload.outputs.artifact-url }}
+          ARTIFACT_DIGEST: ${{ steps.upload.outputs.artifact-digest }}
+          ARTIFACT_ID: ${{ steps.upload.outputs.artifact-id }}
+        run: |
+          test -n "$ARTIFACT_URL" && test -n "$ARTIFACT_DIGEST" && test -n "$ARTIFACT_ID"
+          printf 'Development setup artifact only; no release or deployment.\n\nArtifact ID: `%s`\n\n[Download artifact](%s)\n\nGitHub archive SHA256: `%s`\n' "$ARTIFACT_ID" "$ARTIFACT_URL" "$ARTIFACT_DIGEST" >> "$GITHUB_STEP_SUMMARY"
