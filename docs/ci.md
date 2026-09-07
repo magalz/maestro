@@ -67,7 +67,8 @@ protection enforcement or admit a newer revision.
 
 [branch-protection.json](branch-protection.json) records the exact API payload
 for both `main` and `dev`. It requires PRs, strict up-to-date status checks for
-`development-checks` from GitHub Actions app `15368`, resolved conversations,
+`development-checks`, `CodeQL (rust)` and `CodeQL (actions)` from GitHub
+Actions app `15368`, resolved conversations,
 and administrator enforcement. It permits no bypass users, teams or apps,
 force pushes or branch deletion. Push restrictions are null. Linear history is
 disabled as a requirement to preserve merge commits for `dev` → `main` and
@@ -111,8 +112,8 @@ the reporting app or tested merge identity.
 | Acceptance item | Observed status |
 | --- | --- |
 | Exact protection payload for both branches | Applied and read back on 2026-09-07, including administrator enforcement |
-| Missing, failing and pending check merge rejection | Pending |
-| Old success cannot admit a new revision or stale base | Pending |
+| Missing/pending and failing check merge rejection | PR #2 merge API returned HTTP405 before new checks completed; then explicitly rejected failing development-checks on 66d62b7c4eef517aaec9e37af53c6c85e0915e34 |
+| Old success cannot admit a new revision or stale base | Previous success on a786fe3679b6c7129eb4aacbecf1f38257eee41c did not admit new failing 66d62b7c4eef517aaec9e37af53c6c85e0915e34; explicit stale-base exercise remains pending |
 | Direct push, non-fast-forward force push and deletion rejection; unchanged refs | Main rejected all three. Dev accepted the eligible PR head; probes stopped. Full rejection requirement remains unmet. |
 | Eligible PR merged after explicit human acceptance; resulting commit verified | Pending |
 

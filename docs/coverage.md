@@ -37,9 +37,13 @@ signature/checksum verification enabled. The CLI and verification key are still
 downloaded from the vendor at runtime. Checkout reuses verified v7.0.1 commit
 `3d3c42e5aac5ba805825da76410c181273ba90b1`.
 
-OIDC authentication supports uploads without a stored service token. Successful
-repository activation and report processing remain pending an observed hosted
-run and a processed Codecov report matching the uploaded revision. Do not infer
+OIDC authentication supports uploads without a stored service token. Repository activation and report processing succeeded in
+[run 34162385388](https://github.com/magalz/maestro/actions/runs/34162385388).
+The [processed report](https://app.codecov.io/github/magalz/maestro/commit/f66ebed1a3f9c50784309be420b31748a58ceb7b)
+identifies tested merge `f66ebed1a3f9c50784309be420b31748a58ceb7b`,
+PR head `68cd9522d22c5450de8e6ca517249a89605dbbda`, and only
+`tools/dev-smoke/src/main.rs` (three executed lines). The API reports complete
+processing and an active repository. Do not infer
 activation from local coverage or only an uploader exit code. If the service
 requires account/app authorization, resolve that requirement with the owner.
 This workflow reports upload errors but is not a required merge check.

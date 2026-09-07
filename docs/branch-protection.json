@@ -1,7 +1,20 @@
 {
   "required_status_checks": {
     "strict": true,
-    "checks": [{ "context": "development-checks", "app_id": 15368 }]
+    "checks": [
+      {
+        "context": "development-checks",
+        "app_id": 15368
+      },
+      {
+        "context": "CodeQL (rust)",
+        "app_id": 15368
+      },
+      {
+        "context": "CodeQL (actions)",
+        "app_id": 15368
+      }
+    ]
   },
   "enforce_admins": true,
   "required_pull_request_reviews": {
