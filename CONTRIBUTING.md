@@ -67,16 +67,19 @@ pass. A linked worktree is not an operating-system read-only boundary.
 
 Install the pinned tools and run `make install` and `make check` following
 [the development guide](docs/development.md). This remains a setup-only
-repository with no product tests. CI and branch protections are forthcoming;
-neither is currently claimed as verified.
+repository with no product tests. The [CI workflow](docs/ci.md) schedules
+`development-checks` for PRs into and pushes to `dev` and `main`. Inspect its
+evaluated commit, PR head/base and run identity before treating a result as
+evidence. Observed remote validation and branch protections remain pending.
 The initial empty-repository bootstrap contains only reviewed setup files and
 does not grant ongoing permission for direct pushes or bypasses.
 
 The intended policy for both `dev` and `main` requires pull requests, current
 successful required checks against an up-to-date base, resolved conversations
 and explicit human review and merge. No routine bypass actors, force pushes or
-branch deletion are intended. Required check names and actual enforcement will
-be documented after execution. Missing, skipped or cancelled checks are not
+branch deletion are intended. The stable check name is `development-checks`;
+required-check enforcement will be documented after configuration and verification.
+Missing, skipped or cancelled checks are not
 successful checks. With one human maintainer, the initial policy requires no
 third-party approval review; AI review does not count as independent human
 approval. PR checks receive no publication or deployment secrets.

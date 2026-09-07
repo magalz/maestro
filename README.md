@@ -4,7 +4,8 @@ Maestro's development repository: <https://github.com/magalz/maestro>.
 This repository contains a pinned local development baseline and a minimal Rust
 smoke probe. Follow [the development guide](docs/development.md) to install the
 toolchain and run the checks. No product application or product tests exist yet;
-CI and verified branch protection are still pending.
+The [CI workflow](docs/ci.md) runs `development-checks`; observed remote
+validation and verified branch protection are still pending.
 
 ## Obtain the repository
 

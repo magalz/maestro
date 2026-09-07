@@ -77,8 +77,8 @@ An unavailable pinned download is a setup failure; do not substitute versions.
 
 ## Install and check
 
-From the repository root, these are the entry points for local use and later
-CI. Each target stops with a nonzero exit code on failure:
+From the repository root, these are the entry points for local use and
+[CI](ci.md). Each target stops with a nonzero exit code on failure:
 
 ```bash
 make install  # cargo fetch --locked; npm ci --ignore-scripts --no-audit --no-fund
@@ -139,6 +139,9 @@ git clone --no-local --branch "$(git branch --show-current)" . "$clean_checkout"
 echo "Verified checkout: $clean_checkout"
 ```
 
-CI and remote branch protections are pending separate setup; these local
-checks do not establish either. Follow [the contribution policy](../CONTRIBUTING.md)
+The `development-checks` CI job runs `make install` and `make check`, then
+rejects tracked changes after each command. See [CI documentation](ci.md) for
+revision and runner identities and outcome interpretation. Observed remote
+validation and branch protections remain pending; these local checks do not
+establish either. Follow [the contribution policy](../CONTRIBUTING.md)
 for development PRs and explicit human acceptance before promotion to `main`.
