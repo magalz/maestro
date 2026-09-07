@@ -90,7 +90,7 @@ make check    # build, format, lint and smoke execution
 ```
 
 `make test` explicitly reports that **no product tests exist**. It checks that
-missing tools and an incorrect Node version fail with actionable guidance,
+missing tools and incorrect Rust, Cargo, Node and npm versions fail with actionable guidance,
 then executes the smoke binary. This is setup evidence, not product coverage. No JavaScript build,
 format, lint or test suite exists yet; npm only verifies the package/lock
 baseline. To fix Rust formatting, run `cargo fmt --all`, then `make format`.
