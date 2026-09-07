@@ -2,8 +2,9 @@
 
 The coverage report measures genuine execution of the existing development
 smoke binary and its expected output. Only `tools/dev-smoke/src/main.rs` is
-included. There are no product tests, coverage thresholds or required coverage
-merge gates. A high percentage for this three-line probe says nothing about
+included. There are no product tests, repository-configured coverage thresholds
+or required coverage merge gates; Codecov defaults may produce advisory statuses.
+A high percentage for this three-line probe says nothing about
 Maestro product coverage.
 
 On the supported Linux x86_64 development environment, with Rust tools on PATH:
@@ -20,8 +21,8 @@ are not merged. No cargo-llvm-cov dependency or fabricated test is needed.
 
 `.github/workflows/coverage.yml` runs on pushes to `main`/`dev` and same-repository
 pull requests targeting those branches. Fork coverage reporting is unavailable
-in this initial integration; the job is skipped. Dependabot's restricted token
-may also prevent OIDC uploads. No stored Codecov or deployment secrets are used.
+in this initial integration; fork and Dependabot jobs are explicitly skipped
+because their token permissions differ. No stored Codecov or deployment secrets are used.
 The job has `contents: read` and `id-token: write` for GitHub OIDC authentication,
 uses an ephemeral hosted runner, and does not persist checkout credentials.
 
@@ -41,12 +42,18 @@ OIDC authentication supports uploads without a stored service token. Repository 
 [run 34162385388](https://github.com/magalz/maestro/actions/runs/34162385388).
 The [processed report](https://app.codecov.io/github/magalz/maestro/commit/f66ebed1a3f9c50784309be420b31748a58ceb7b)
 identifies tested merge `f66ebed1a3f9c50784309be420b31748a58ceb7b`,
-PR head `68cd9522d22c5450de8e6ca517249a89605dbbda`, and only
+PR head `68cd9522d22c5450de8e6ca517249a89605dbbda`, base
+`79a99f060d28f2788522de7d7ccb3080892e9a1e`, and only
 `tools/dev-smoke/src/main.rs` (three executed lines). The API reports complete
 processing and an active repository. Do not infer
 activation from local coverage or only an uploader exit code. If the service
 requires account/app authorization, resolve that requirement with the owner.
 This workflow reports upload errors but is not a required merge check.
+
+For failures, inspect the upload step and the linked Codecov commit's processing
+state. Fix the reported authentication/report issue, then rerun that intended
+workflow revision. Verify both a successful job and a processed report with its
+exact uploaded SHA; if the service remains queued or errored, acceptance is pending.
 
 Sonar remains untouched pending the owner's project decision; no Sonar analysis
 or quality gate is claimed.
