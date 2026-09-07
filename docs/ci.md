@@ -5,9 +5,9 @@
 either branch. It has no path filters or conditional job skips and has a
 30-minute timeout.
 
-It installs Rust 1.98.1 with rustfmt, Clippy and the
-`x86_64-unknown-linux-gnu` target through rustup, then Node 24.20.0 from
-`.node-version`, including npm 11.19.0. The existing `make check-tools` guard
+It installs Node 24.20.0 from `.node-version`, including npm 11.19.0,
+then Rust 1.98.1 with rustfmt, Clippy and the
+`x86_64-unknown-linux-gnu` target through rustup. The existing `make check-tools` guard
 rejects incorrect versions. CI runs the same `make install` and `make check`
 commands as [local development](development.md): frozen Cargo/npm installs,
 Rust build, formatting, Clippy, tooling error checks and the smoke probe.
@@ -28,6 +28,12 @@ the contributor's head SHA. For a push, checkout evaluates the pushed commit;
 PR identity fields are empty. Keep the full tested/head/base SHAs and run URL
 with any validation claim. A result from another revision or an older base
 does not establish that the current proposed merge passes.
+
+Retargeting a PR schedules another check. If its base advances, update your
+feature branch from that base and push to test the new merge. Resolve merge
+conflicts before expecting a `pull_request` run. Fork contributions may await
+maintainer approval to run; approval to execute CI is not merge approval.
+Keep this job name unique across workflows.
 
 Only a completed `development-checks` job with conclusion `success` counts as
 passing for that evaluated revision. Missing, pending, failed, skipped,

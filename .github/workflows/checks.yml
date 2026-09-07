@@ -3,6 +3,7 @@ name: Development checks
 on:
   pull_request:
     branches: [main, dev]
+    types: [opened, synchronize, reopened, edited, ready_for_review]
   push:
     branches: [main, dev]
 
@@ -14,6 +15,8 @@ jobs:
     name: development-checks
     runs-on: ubuntu-24.04
     timeout-minutes: 30
+    env:
+      RUSTUP_TOOLCHAIN: 1.98.1
     defaults:
       run:
         shell: bash
@@ -44,7 +47,6 @@ jobs:
 
       - name: Install pinned Rust toolchain
         run: |
-          unset RUSTUP_TOOLCHAIN
           rustup toolchain install 1.98.1 --profile minimal --component rustfmt --component clippy --target x86_64-unknown-linux-gnu
 
       - name: Install from committed locks
