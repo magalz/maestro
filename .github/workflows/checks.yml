@@ -66,7 +66,6 @@ jobs:
     timeout-minutes: 30
     env:
       RUSTUP_TOOLCHAIN: 1.98.1
-      CARGO_TARGET_DIR: ${{ runner.temp }}/artifact-target
     defaults:
       run:
         shell: bash
@@ -87,6 +86,8 @@ jobs:
       - name: Build development smoke binary
         run: |
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          export CARGO_TARGET_DIR="$RUNNER_TEMP/artifact-target"
+          printf 'CARGO_TARGET_DIR=%s\n' "$CARGO_TARGET_DIR" >> "$GITHUB_ENV"
           cargo build --release --locked --package maestro-dev-smoke
           git diff --exit-code HEAD --
 
