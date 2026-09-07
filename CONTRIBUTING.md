@@ -77,10 +77,20 @@ does not grant ongoing permission for direct pushes or bypasses.
 
 The [protection payload](docs/branch-protection.json) is identical for `dev`
 and `main`: PRs, strict up-to-date checks from GitHub Actions (`development-checks`,
-app ID `15368`), resolved conversations and administrator enforcement, with no
+`CodeQL (rust)` and `CodeQL (actions)`, app ID `15368`), resolved conversations
+and administrator enforcement, with no classic-protection
 bypass users, teams or apps, force pushes or branch deletion. Push restrictions
 are null; required PRs still gate changes. Linear history is not required, so
 promotion and reconciliation can preserve ancestry with merge commits.
+
+The separate [update-only ruleset](docs/pr-only-update-rule.json), active as
+[rule 22490835](https://github.com/magalz/maestro/rules/22490835), prevents direct
+branch updates. Its sole owner-approved exception allows administrator
+`RepositoryRole` `5` to bypass that update rule only through a pull request
+(`bypass_mode: pull_request`). It does not bypass the independent classic
+protections or required checks. No other bypass is approved.
+Only administrators can merge through this rule; bots and writers may propose
+PRs but cannot merge them.
 
 Magal is the sole human maintainer. Required third-party approvals are zero;
 stale review dismissal is enabled, while code-owner and last-push approvals are

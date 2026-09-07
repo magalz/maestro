@@ -69,10 +69,20 @@ protection enforcement or admit a newer revision.
 for both `main` and `dev`. It requires PRs, strict up-to-date status checks for
 `development-checks`, `CodeQL (rust)` and `CodeQL (actions)` from GitHub
 Actions app `15368`, resolved conversations,
-and administrator enforcement. It permits no bypass users, teams or apps,
+and administrator enforcement. This classic protection layer permits no bypass users, teams or apps,
 force pushes or branch deletion. Push restrictions are null. Linear history is
 disabled as a requirement to preserve merge commits for `dev` → `main` and
 reconciliation PRs.
+
+The separate [update-only ruleset payload](pr-only-update-rule.json) is active
+as [rule 22490835](https://github.com/magalz/maestro/rules/22490835) on both
+branches. Its sole owner-approved exception is administrator `RepositoryRole`
+`5` with `bypass_mode: pull_request`: administrators can update through PRs,
+but cannot directly push an eligible PR head. This exception applies only to
+the update-only ruleset; the independent classic protections and required
+checks still apply to administrator PR merges.
+Only administrators can merge through this update rule; bots and writers may
+propose PRs but cannot merge them.
 
 Magal is the sole human maintainer: required approving reviews are zero,
 stale reviews are dismissed, and code-owner and last-push approvals are false.
@@ -84,11 +94,13 @@ See [the contribution policy](../CONTRIBUTING.md#checks-and-merge-policy).
 
 ### Verify configuration and revision
 
-An authenticated maintainer can read both protections without changing them:
+An authenticated maintainer can read both policy layers without changing them:
 
 ```sh
 gh api repos/magalz/maestro/branches/main/protection
 gh api repos/magalz/maestro/branches/dev/protection
+gh api repos/magalz/maestro/rulesets
+gh api repos/magalz/maestro/rulesets/22490835
 gh api repos/magalz/maestro --jq '{visibility, permissions, allow_merge_commit}'
 gh pr view PR_NUMBER --repo magalz/maestro \
   --json headRefOid,mergeable,mergeStateStatus,statusCheckRollup
@@ -101,29 +113,58 @@ gh api repos/magalz/maestro/commits/PR_HEAD_SHA/check-runs \
 Substitute the PR number and full head SHA; obtain the tested merge SHA from the workflow log.
 Compare every policy field to the payload: the API wraps booleans such as
 `enforce_admins` and `allow_force_pushes` in `enabled`, and can add URLs and a
-derived `contexts` list. Confirm the app ID, absent or empty bypass lists and current
-head/base identities, not just the check name. Only a completed successful job
+derived `contexts` list. Confirm the app ID and absent or empty bypass lists in
+classic protection. For the ruleset, compare active enforcement, exact main/dev
+scope, the sole update rule and its PR-only administrator exception to the
+separate payload. Check current head/base identities, not just the check name.
+Only a completed successful job
 for the current evaluated revision qualifies. Old success cannot qualify new
-commits or an outdated tested base. CLI check summaries alone do not establish
+commits or changed base source. GitHub may retain results when only ancestry
+changes and the source tree stays identical, as observed below.
+CLI check summaries alone do not establish
 the reporting app or tested merge identity.
 
 ### Enforcement evidence and account limits
 
 | Acceptance item | Observed status |
 | --- | --- |
-| Exact protection payload for both branches | Applied and read back on 2026-09-07, including administrator enforcement |
+| Exact protection payload for both branches | Classic protections and active update-only rule 22490835 applied and read back on 2026-09-07 |
 | Missing/pending and failing check merge rejection | PR #2 merge API returned HTTP405 before new checks completed; then explicitly rejected failing development-checks on 66d62b7c4eef517aaec9e37af53c6c85e0915e34 |
-| Old success cannot admit a new revision or stale base | Previous success on a786fe3679b6c7129eb4aacbecf1f38257eee41c did not admit new failing 66d62b7c4eef517aaec9e37af53c6c85e0915e34; explicit stale-base exercise remains pending |
-| Direct push, non-fast-forward force push and deletion rejection; unchanged refs | Main rejected all three. Dev accepted the eligible PR head; probes stopped. Full rejection requirement remains unmet. |
-| Eligible PR merged after explicit human acceptance; resulting commit verified | Pending |
+| Old success cannot admit a new revision or changed-source stale base | Previous success on a786fe3679b6c7129eb4aacbecf1f38257eee41c did not admit new failing 66d62b7c4eef517aaec9e37af53c6c85e0915e34; PR #8 administrator merge rejected HTTP405 after a base source change, with its ref unchanged |
+| Direct push, API update, force push and deletion rejection; unchanged refs | Identical disposable policy fixture rejected all four after the approved update-only rule was added |
+| Required checks survive the PR-only administrator exception | PR #7 merge rejected HTTP405 with missing checks |
+| Eligible PR merged after explicit human acceptance; resulting commit verified | Accepted fixture PR #6 proves the final policy admits an administrator PR merge; accepted PRs #2, #4 and #5 predate the update rule |
+
+The positive [PR #6 fixture](https://github.com/magalz/maestro/pull/6) merged
+identical source trees through the administrator PR operation as
+`5bc5eb0a8211c63c820b32352f60f6493e5a965d`, with parents
+`2eac75dff59fc355a218bd667b765ef94f07abb2` and
+`16d3da5749de9d0a0384e7846d21d95b80b87095`. These fixture operations did not
+change `main` or `dev`.
+
+The disposable fixture copied the exact classic protection and update rule,
+targeting `feature/epic0-policy-verification`; production scope remained
+`main`/`dev`. From base `2eac75dff59fc355a218bd667b765ef94f07abb2`, direct Git
+and API updates targeted the already-successful accepted head
+`16d3da5749de9d0a0384e7846d21d95b80b87095`. GitHub rejected them with GH013
+and HTTP422, respectively, leaving the ref unchanged.
+
+For [PR #8](https://github.com/magalz/maestro/pull/8), base
+`81c61b568f22fcca788e7da828ca0ac6331754ef` added a harmless fixture file while
+the previously passing head `16d3da5749de9d0a0384e7846d21d95b80b87095` stayed
+unchanged. GitHub reported the PR behind and rejected administrator merge with
+HTTP405: “3 of 3 required status checks are expected”; the ref did not change.
+An earlier empty-commit base advance with the same source tree was admitted,
+so this proves changed-source stale-base rejection, not that ancestry-only
+changes always invalidate results.
 
 This personal repository rejects `bypass_pull_request_allowances` with explicit
 empty user/team lists: GitHub returned HTTP 422, “Only organization repositories
 can have users and team restrictions.” The payload therefore omits that object;
-readback must confirm no bypass allowances and administrator enforcement.
-Remaining account/repository capability verification is pending: a payload
-alone does not establish enforcement. Record API errors or unavailable controls
-as limitations; do not change visibility or add bypasses to work around them.
+readback must confirm no classic-protection bypass allowances and administrator
+enforcement. The separately approved ruleset exception uses a repository role.
+Record API errors or unavailable controls as limitations; do not change
+visibility or add further exceptions to work around them.
 Administrator enforcement covers protected
 operations, but administrators able to edit repository policy can still change
 that policy. The zero-approval arrangement also cannot prove independent human
@@ -135,13 +176,16 @@ The dev direct-push probe advanced it from
 [PR #1](https://github.com/magalz/maestro/pull/1) merged because that push matched
 its eligible contents. This was an unexpected enforcement result, not explicit
 human merge acceptance. No history was rewritten and main was unchanged.
-Additional enforcement is under investigation; Story 0.4 is not complete.
+The owner-approved update-only rule now remedies this gap, as exercised on the
+identical disposable fixture. Changed-source stale-base rejection is also
+verified as described above.
 
-Before rejection probes, read back both protections and record original remote
-refs. Use a non-bypass actor; stop immediately if a forbidden mutation succeeds.
+Before rejection probes, read back both policy layers and record original remote
+refs. Use an actor with no bypass for the operation under test; stop immediately
+if a forbidden mutation succeeds.
 Preserve API/Git rejection responses, unchanged refs and full revision/run
 identities in ignored local evidence. A missing, pending or skipped check is
-never recorded as success. Successful merge acceptance remains separate and
-pending until a human explicitly accepts the complete reviewable PR and the
-resulting merge commit is verified. Merging does not authorize deployment,
+never recorded as success. Every future successful merge still requires human
+acceptance of the complete reviewable PR and verification of the resulting
+merge commit. Merging does not authorize deployment,
 publication or a refresh of the linked `main` reference.
