@@ -7,6 +7,9 @@ on:
   push:
     branches: [main, dev]
 
+  schedule:
+    - cron: '23 6 * * 1'
+
 permissions:
   contents: read
 
@@ -61,7 +64,7 @@ jobs:
 
   development-artifact:
     name: development-artifact
-    needs: development-checks
+    needs: [development-checks, codeql]
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     env:
@@ -139,3 +142,32 @@ jobs:
         run: |
           test -n "$ARTIFACT_URL" && test -n "$ARTIFACT_DIGEST" && test -n "$ARTIFACT_ID"
           printf 'Development setup artifact only; no release or deployment.\n\nArtifact ID: `%s`\n\n[Download artifact](%s)\n\nGitHub archive SHA256: `%s`\n' "$ARTIFACT_ID" "$ARTIFACT_URL" "$ARTIFACT_DIGEST" >> "$GITHUB_STEP_SUMMARY"
+
+  codeql:
+    name: CodeQL (${{ matrix.language }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [rust, actions]
+    steps:
+      - name: Check out evaluated revision
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@cdf488f595d80d6e07e03d4674febd5ab45fa938 # v4.37.9
+        with:
+          languages: ${{ matrix.language }}
+          # Rust extraction may still execute build.rs and procedural macros.
+          build-mode: none
+
+      - name: Analyze and upload results
+        uses: github/codeql-action/analyze@cdf488f595d80d6e07e03d4674febd5ab45fa938 # v4.37.9
+        with:
+          category: /language:${{ matrix.language }}

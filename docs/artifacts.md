@@ -1,7 +1,7 @@
 # Development artifacts
 
 The `development-artifact` job in `.github/workflows/checks.yml` runs only after
-`development-checks` succeeds in the same run. It checks out the same evaluated
+`development-checks` and both required CodeQL language scans succeed in the same run. It checks out the same evaluated
 `github.sha` (the merge revision for pull requests), installs Rust/Cargo 1.98.1,
 and builds `cargo build --release --locked --package maestro-dev-smoke` on
 Ubuntu 24.04 x64. It needs no Node/npm installation; the upstream development

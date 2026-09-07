@@ -2,7 +2,7 @@
 
 ## Native configuration
 
-`.github/workflows/codeql.yml` scans actual Rust sources and GitHub Actions on
+The CodeQL matrix in `.github/workflows/checks.yml` scans actual Rust sources and GitHub Actions on
 pull requests and pushes to `main`/`dev`, and weekly on Monday at 06:23 UTC.
 There is no JavaScript product source to scan. Rust currently consists of the
 development smoke crate; analysis is not product test coverage.

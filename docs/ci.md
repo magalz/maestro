@@ -1,8 +1,8 @@
 # Development checks in CI
 
-[The workflow](../.github/workflows/checks.yml) schedules one job named
-`development-checks` for pull requests targeting `main` or `dev` and pushes to
-either branch. It has no path filters or conditional job skips and has a
+[The workflow](../.github/workflows/checks.yml) runs `development-checks`, a Rust/Actions CodeQL matrix, and a dependent
+[artifact job](artifacts.md) for PRs targeting main/dev, pushes to either branch,
+and a weekly schedule. Artifacts wait for all three required check results. It has no path filters or conditional job skips and has a
 30-minute timeout.
 
 It installs Node 24.20.0 from `.node-version`, including npm 11.19.0,
