@@ -1,5 +1,9 @@
 # Maestro
 
+Setup guides: [development](docs/development.md), [CI and protections](docs/ci.md),
+[security integrations](docs/security.md), [artifacts](docs/artifacts.md),
+[setup-only coverage](docs/coverage.md).
+
 Maestro's development repository: <https://github.com/magalz/maestro>.
 This repository contains a pinned local development baseline and a minimal Rust
 smoke probe. Follow [the development guide](docs/development.md) to install the

@@ -67,17 +67,21 @@ cat BUILD.txt
 
 Match `BUILD.txt` against the recorded source, PR, run/attempt, tools and runner
 identity in the job logs. Only execute a binary whose source/run you have
-reviewed and trust, on compatible Linux x64:
+reviewed and trust, on the verified Ubuntu 24.04 x64 baseline (other distributions
+are unverified):
 
 ```bash
-test "$(./maestro-dev-smoke)" = 'Maestro development smoke probe passed.'
+smoke_output=$(./maestro-dev-smoke)
+test "$smoke_output" = 'Maestro development smoke probe passed.'
 ```
 
 Inspect `GET /repos/{owner}/{repo}/actions/artifacts/{artifact_id}` using an
 existing read-authorized GitHub session. Record `workflow_run.head_sha`,
 `workflow_run.id`, `digest`, `created_at`, `expires_at`, and `expired`; compare
 the run's evaluated SHA and metadata, and verify expiry is seven days after
-creation. The API's outer archive digest and the two internal file checksums
+creation (service timestamps can differ by one second). For PR runs,
+`workflow_run.head_sha` matches `pr_head_sha`; `BUILD.txt`'s `source_sha` matches
+the tested merge revision in the job log. The API's outer archive digest and the two internal file checksums
 must all be retained with acceptance evidence. No new credential is required
 by the workflow; downloading private artifacts requires the reader's own
 authorized access.
@@ -99,6 +103,9 @@ authorized access.
   build again for the intended revision, then verify the new identity and
   digests. A rebuild can differ with a changed hosted runner image; it does not
   restore the original bytes or extend the original retention.
+  If the old synthetic merge revision is no longer fetchable, use a newly
+  evaluated PR revision and label it with its new SHA; never claim the old
+  artifact has been recreated.
 
 Future publication or deployment requires explicit authorization identifying
 the particular artifact and target, plus a named owner for isolated,

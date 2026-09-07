@@ -1,0 +1,46 @@
+name: Setup-only coverage
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+    types: [opened, synchronize, reopened, edited, ready_for_review]
+
+permissions:
+  contents: read
+
+jobs:
+  setup-only-coverage:
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Check out evaluated revision
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install matching Rust coverage tools
+        run: rustup toolchain install 1.98.1 --profile minimal --component llvm-tools-preview --target x86_64-unknown-linux-gnu
+
+      - name: Measure existing development smoke execution
+        run: |
+          bash tools/coverage.sh
+          printf 'Setup-only development smoke coverage; no product tests or coverage.\n' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload setup-only smoke coverage
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
+        with:
+          use_oidc: true
+          version: v11.3.1
+          files: coverage/setup-smoke.lcov
+          disable_search: true
+          plugins: noop
+          flags: setup-only
+          name: development-smoke-setup-only
+          override_commit: ${{ github.sha }}
+          fail_ci_if_error: true

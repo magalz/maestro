@@ -103,6 +103,8 @@ jobs:
           artifact_name="development-smoke-${GITHUB_SHA}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           test -x "$CARGO_TARGET_DIR/release/maestro-dev-smoke"
           install -m 755 "$CARGO_TARGET_DIR/release/maestro-dev-smoke" "$package_dir/maestro-dev-smoke"
+          smoke_output=$("$package_dir/maestro-dev-smoke")
+          test "$smoke_output" = 'Maestro development smoke probe passed.'
           {
             printf 'purpose=development setup evidence only; not product certification\n'
             printf 'repository=%s\nevent=%s\nref=%s\nsource_sha=%s\n' "$GITHUB_REPOSITORY" "$GITHUB_EVENT_NAME" "$GITHUB_REF" "$(git rev-parse HEAD)"

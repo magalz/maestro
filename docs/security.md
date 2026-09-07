@@ -40,8 +40,14 @@ the repository's Security tab. Non-provider secret patterns and validity checks
 remain disabled; an API request did not enable those optional controls.
 
 Local configuration verification is recorded in the implementation report.
-Hosted Rust/Actions analysis and SARIF uploads still require a successful run
-with its analyzed commit and result links recorded. Default-branch activation needs verification
+Hosted Rust/Actions analysis and SARIF uploads passed in
+[run 34161931658](https://github.com/magalz/maestro/actions/runs/34161931658),
+for head `a786fe3679b6c7129eb4aacbecf1f38257eee41c`, tested merge
+`10fa4ed23feccef4a0c0980c658963c640c1d88f`. The analyses API recorded both
+languages with no errors and zero results; no open code-scanning alerts were
+observed. This is setup-source scanning, not product security certification.
+CodeQL is currently advisory; required-check binding follows observed check
+identity and reviewed policy. Default-branch activation needs verification
 after landing. Do not require a service check in branch policy before observing
 its successful run. Repository plan/visibility must support CodeQL; account or
 paid-plan changes require owner authorization.
@@ -52,6 +58,8 @@ The public Codecov API reported `magalz/maestro` inactive. Activation and verifi
 project authorization remain pending. No upload, passing coverage gate or
 product-coverage claim is made; the development smoke probe does not substitute
 for product coverage.
+The [setup-only coverage workflow](coverage.md) uses native Rust instrumentation
+and Codecov OIDC; processed remote results remain pending.
 
 Sonar's API returned project `magalz_maestro`, organization `magalz`, display
 name `maestro-old`, with existing August 31 analyses. Reusing it requires the
