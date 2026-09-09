@@ -1,0 +1,113 @@
+[
+  {
+    "name": "@aws-sdk/credential-provider-http",
+    "version": "3.972.72",
+    "registry": "https://registry.npmjs.org/%40aws-sdk%2Fcredential-provider-http/3.972.72",
+    "repository": "git+https://github.com/aws/aws-sdk-js-v3.git",
+    "gitHead": null,
+    "integrity": "sha512-X98zYOrVOeuosCX+6ktf29FC2N2GHPLia7qv6mzPzTc+RPAuHWCDS++Z6JK7eGYqb/v6uaW7bAXaOvDBfol+0w==",
+    "license": "Apache-2.0",
+    "notices": [
+      {
+        "path": "Apache-2.0.txt",
+        "origin": "https://www.apache.org/licenses/LICENSE-2.0.txt",
+        "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+        "bytes": 11358
+      }
+    ],
+    "status": "declared-standard-license-associated",
+    "reason": "Exact locked package metadata declares Apache-2.0; canonical standard text supplied. All shipped attribution remains in the exact closure. Missing gitHead remains source provenance uncertainty, not an unknown standard license or proof a separate NOTICE is required."
+  },
+  {
+    "name": "@aws-sdk/credential-provider-login",
+    "version": "3.972.77",
+    "registry": "https://registry.npmjs.org/%40aws-sdk%2Fcredential-provider-login/3.972.77",
+    "repository": "git+https://github.com/aws/aws-sdk-js-v3.git",
+    "gitHead": null,
+    "integrity": "sha512-Jb59xfEISoN5mmbnA+HYqdtrSX3CgCtJoof+V5D8/TgUI56W63GEEd5Y58WijU3Ou6+WEgaLD1feVzaRXV5IDQ==",
+    "license": "Apache-2.0",
+    "notices": [
+      {
+        "path": "Apache-2.0.txt",
+        "origin": "https://www.apache.org/licenses/LICENSE-2.0.txt",
+        "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+        "bytes": 11358
+      }
+    ],
+    "status": "declared-standard-license-associated",
+    "reason": "Exact locked package metadata declares Apache-2.0; canonical standard text supplied. All shipped attribution remains in the exact closure. Missing gitHead remains source provenance uncertainty, not an unknown standard license or proof a separate NOTICE is required."
+  },
+  {
+    "name": "@aws-sdk/nested-clients",
+    "version": "3.997.44",
+    "registry": "https://registry.npmjs.org/%40aws-sdk%2Fnested-clients/3.997.44",
+    "repository": "git+https://github.com/aws/aws-sdk-js-v3.git",
+    "gitHead": null,
+    "integrity": "sha512-NhEgryjlBF9w38ZXqGymQV28IhkYa1mKhlbYnqIis57AYwWGVYfUPgg/qC2rLRqOUfblxx++irvju10kVTa8Vw==",
+    "license": "Apache-2.0",
+    "notices": [
+      {
+        "path": "Apache-2.0.txt",
+        "origin": "https://www.apache.org/licenses/LICENSE-2.0.txt",
+        "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+        "bytes": 11358
+      }
+    ],
+    "status": "declared-standard-license-associated",
+    "reason": "Exact locked package metadata declares Apache-2.0; canonical standard text supplied. All shipped attribution remains in the exact closure. Missing gitHead remains source provenance uncertainty, not an unknown standard license or proof a separate NOTICE is required."
+  },
+  {
+    "name": "@earendil-works/pi-ai",
+    "version": "0.84.4",
+    "registry": "https://registry.npmjs.org/%40earendil-works%2Fpi-ai/0.84.4",
+    "repository": "git+https://github.com/earendil-works/pi.git",
+    "gitHead": "b79e4cc834970cca69daebffab7df1da7d1e52c4",
+    "integrity": "sha512-AClAZxf5+c4RRu44NJPS6wyQy+Nmq+Mzyyrdvm4ZVMNuixelO02RZX4G4Aq1F145Yzp43wnM5S+hLlSI7ypfVw==",
+    "license": "MIT",
+    "notices": [
+      {
+        "path": "_earendil-works_pi-ai-0.84.4-LICENSE",
+        "origin": "https://raw.githubusercontent.com/earendil-works/pi/b79e4cc834970cca69daebffab7df1da7d1e52c4/LICENSE",
+        "sha256": "0457f5bcec3b3b211605dfb5d1a49042fd638f3686a410fe099c24a25af13c48",
+        "bytes": 1069
+      }
+    ],
+    "status": "immutable-source-associated"
+  },
+  {
+    "name": "@earendil-works/pi-telemetry",
+    "version": "0.84.4",
+    "registry": "https://registry.npmjs.org/%40earendil-works%2Fpi-telemetry/0.84.4",
+    "repository": "git+https://github.com/earendil-works/pi.git",
+    "gitHead": "b79e4cc834970cca69daebffab7df1da7d1e52c4",
+    "integrity": "sha512-8e2CuxM+ht+hedQXTZmi5JVl6/xDK9RpSDL2+MbITevKYQhMZ/z6lJOTFgox3HQyGxO8mOZEtYGVeQNaD4OzqA==",
+    "license": "MIT",
+    "notices": [
+      {
+        "path": "_earendil-works_pi-telemetry-0.84.4-LICENSE",
+        "origin": "https://raw.githubusercontent.com/earendil-works/pi/b79e4cc834970cca69daebffab7df1da7d1e52c4/LICENSE",
+        "sha256": "0457f5bcec3b3b211605dfb5d1a49042fd638f3686a410fe099c24a25af13c48",
+        "bytes": 1069
+      }
+    ],
+    "status": "immutable-source-associated"
+  },
+  {
+    "name": "@xterm/headless",
+    "version": "6.0.0",
+    "registry": "https://registry.npmjs.org/%40xterm%2Fheadless/6.0.0",
+    "repository": "git+https://github.com/xtermjs/xterm.js.git",
+    "gitHead": "f447274f430fd22513f6adbf9862d19524471c04",
+    "integrity": "sha512-5Yj1QINYCyzrZtf8OFIHi47iQtI+0qYFPHmouEfG8dHNxbZ9Tb9YGSuLcsEwj9Z+OL75GJqPyJbyoFer80a2Hw==",
+    "license": "MIT",
+    "notices": [
+      {
+        "path": "_xterm_headless-6.0.0-LICENSE",
+        "origin": "https://raw.githubusercontent.com/xtermjs/xterm.js/f447274f430fd22513f6adbf9862d19524471c04/LICENSE",
+        "sha256": "b569f629d00f2626a8100df2a1798210535621e42164dfd426a6fe5aac7b0ccd",
+        "bytes": 1261
+      }
+    ],
+    "status": "immutable-source-associated"
+  }
+]

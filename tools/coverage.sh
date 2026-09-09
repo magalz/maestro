@@ -24,4 +24,4 @@ grep -Eq '^SF:.*tools/dev-smoke/src/main.rs$' "$CARGO_TARGET_DIR/setup-smoke.lco
 grep -Eq '^LH:[1-9][0-9]*$' "$CARGO_TARGET_DIR/setup-smoke.lcov"
 mkdir -p coverage
 cp "$CARGO_TARGET_DIR/setup-smoke.lcov" coverage/setup-smoke.lcov
-printf 'Setup-only development smoke coverage: coverage/setup-smoke.lcov. No product tests or coverage.\n'
+printf 'Setup-only development smoke coverage: coverage/setup-smoke.lcov. Shared contract tests are not measured by this job.\n'

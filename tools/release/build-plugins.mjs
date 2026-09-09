@@ -1,0 +1,10 @@
+import {readFileSync,writeFileSync,mkdirSync} from 'node:fs';
+import ts from 'typescript';
+import assert from 'node:assert/strict';
+assert.equal(ts.version,'6.0.3');
+const source=readFileSync('tools/release/plugins/client.ts','utf8');
+const result=ts.transpileModule(source,{reportDiagnostics:true,compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.CommonJS}});
+assert.deepEqual(result.diagnostics,[]);
+mkdirSync('plugins',{recursive:true});
+writeFileSync('plugins/maestro-host.mjs',readFileSync('tools/release/plugins/host.mjs'));
+writeFileSync('plugins/maestro-client.js',`window.__ModuleLoader__.load({id:"maestro-client-feasibility",factory:(require)=>{var module={exports:{}};var exports=module.exports;${result.outputText}\nreturn module.exports;}});\n`);

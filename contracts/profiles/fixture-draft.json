@@ -1,0 +1,1 @@
+{"schema":"maestro.artifact.profile/1","family":"maestro.fixture.json/1","stage":"draft","validator":"maestro.fixture-checker/1","required":["parse","structure","integrity"],"max_input_bytes":16777216,"max_report_bytes":1048576,"max_duration_ms":1000,"max_diagnostics":32,"max_checks":3,"configuration":"0000000000000000000000000000000000000000000000000000000000000000"}

@@ -10,9 +10,11 @@ then Rust 1.98.1 with rustfmt, Clippy and the
 `x86_64-unknown-linux-gnu` target through rustup. The existing `make check-tools` guard
 rejects incorrect versions. CI runs the same `make install` and `make check`
 commands as [local development](development.md): frozen Cargo/npm installs,
-Rust build, formatting, Clippy, tooling error checks and the smoke probe.
+Rust/TypeScript builds, deterministic binding checks, formatting, Clippy,
+tooling error checks, the smoke probe and shared contract/admission tests.
 After each command, `git diff --exit-code HEAD --` rejects tracked changes,
-including manifest or lockfile rewrites. No product tests exist yet.
+including manifest or lockfile rewrites. Synthetic admission tests establish
+contract behavior; they do not establish a usable distribution or target-route acceptance.
 
 ## Identify what ran
 

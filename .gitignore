@@ -3,6 +3,7 @@
 .claude/
 .codex/
 .memdb/
+.memtrace/
 _bmad/
 _bmad-output/
 branding/

@@ -1,0 +1,1806 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "maestro.contract-set/2",
+  "title": "MaestroRecord",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/ReleaseManifest"
+    },
+    {
+      "$ref": "#/$defs/ReleaseSignature"
+    },
+    {
+      "$ref": "#/$defs/AcceptanceSignature"
+    },
+    {
+      "$ref": "#/$defs/TransitionSignature"
+    },
+    {
+      "$ref": "#/$defs/TrustRoot"
+    },
+    {
+      "$ref": "#/$defs/TrustTransition"
+    },
+    {
+      "$ref": "#/$defs/ValidatorRegistry"
+    },
+    {
+      "$ref": "#/$defs/RuntimeBootstrap"
+    },
+    {
+      "$ref": "#/$defs/CompatibilityCatalog"
+    },
+    {
+      "$ref": "#/$defs/AcceptancePolicy"
+    },
+    {
+      "$ref": "#/$defs/ReleaseAcceptance"
+    },
+    {
+      "$ref": "#/$defs/ArtifactProfile"
+    },
+    {
+      "$ref": "#/$defs/JsonFixture"
+    },
+    {
+      "$ref": "#/$defs/ValidationReport"
+    },
+    {
+      "$ref": "#/$defs/ResourceProfile"
+    },
+    {
+      "$ref": "#/$defs/DshManifest"
+    },
+    {
+      "$ref": "#/$defs/DshClosure"
+    },
+    {
+      "$ref": "#/$defs/DshResourceProfile"
+    }
+  ],
+  "$defs": {
+    "file": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$"
+        },
+        "role": {
+          "type": "string",
+          "maxLength": 128,
+          "enum": [
+            "launcher",
+            "controller",
+            "gateway",
+            "plugin",
+            "dsh",
+            "node",
+            "schema",
+            "binding",
+            "validator",
+            "profile",
+            "bootstrap",
+            "catalog",
+            "lock",
+            "provenance",
+            "notice"
+          ]
+        },
+        "sha256": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "size": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20,
+          "pattern": "^(0|[1-9][0-9]{0,19})$"
+        },
+        "classification": {
+          "type": "string",
+          "maxLength": 128,
+          "enum": [
+            "executable",
+            "data"
+          ]
+        }
+      },
+      "required": [
+        "path",
+        "role",
+        "sha256",
+        "size",
+        "classification"
+      ]
+    },
+    "component": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "files": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 4096,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$"
+          }
+        },
+        "notices": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 128,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$"
+          }
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        }
+      },
+      "required": [
+        "name",
+        "version",
+        "rationale",
+        "files",
+        "notices",
+        "source"
+      ]
+    },
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$"
+        },
+        "sha256": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "required": [
+        "path",
+        "sha256"
+      ]
+    },
+    "case": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+        },
+        "outcome": {
+          "type": "string",
+          "maxLength": 128,
+          "enum": [
+            "pass",
+            "fail",
+            "error"
+          ]
+        },
+        "evidence": {
+          "$ref": "#/$defs/reference"
+        }
+      },
+      "required": [
+        "id",
+        "outcome",
+        "evidence"
+      ]
+    },
+    "reader": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "type": "string",
+              "maxLength": 128,
+              "const": "self"
+            }
+          },
+          "required": [
+            "kind"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "type": "string",
+              "maxLength": 128,
+              "const": "release"
+            },
+            "manifest": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64,
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          },
+          "required": [
+            "kind",
+            "manifest"
+          ]
+        }
+      ]
+    },
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "project": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+        },
+        "scope": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+        },
+        "subject": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+        },
+        "revision": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20,
+          "pattern": "^(0|[1-9][0-9]{0,19})$"
+        },
+        "input": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "dependencies": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "family": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+        },
+        "stage": {
+          "type": "string",
+          "maxLength": 128,
+          "enum": [
+            "draft",
+            "accepted"
+          ]
+        },
+        "profile": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "schema": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "validator": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "configuration": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "executor": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "environment": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "required": [
+        "project",
+        "scope",
+        "subject",
+        "revision",
+        "input",
+        "dependencies",
+        "family",
+        "stage",
+        "profile",
+        "schema",
+        "validator",
+        "configuration",
+        "executor",
+        "environment"
+      ]
+    },
+    "diagnostic": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "rule": {
+          "type": "string",
+          "maxLength": 128,
+          "enum": [
+            "PARSE",
+            "STRUCTURE",
+            "BINDING",
+            "INTEGRITY",
+            "COVERAGE",
+            "CHECKER",
+            "TIMEOUT"
+          ]
+        },
+        "location": {
+          "type": "string",
+          "maxLength": 128,
+          "enum": [
+            "$",
+            "$.schema",
+            "$.value",
+            "$.dependencies",
+            "$.checks",
+            "$.binding"
+          ]
+        },
+        "message": {
+          "type": "string",
+          "maxLength": 128,
+          "enum": [
+            "Input rejected",
+            "Required check failed",
+            "Required check unavailable",
+            "Snapshot changed",
+            "Trusted bytes mismatch",
+            "Required coverage incomplete"
+          ]
+        },
+        "hint": {
+          "type": "string",
+          "maxLength": 128,
+          "enum": [
+            "Correct the editable draft and recheck",
+            "Restore from independently trusted evidence",
+            "Run the required checker again"
+          ]
+        }
+      },
+      "required": [
+        "rule",
+        "location",
+        "message",
+        "hint"
+      ]
+    },
+    "ReleaseManifest": {
+      "title": "ReleaseManifest",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "type": "string",
+          "maxLength": 128,
+          "const": "maestro.release.manifest/1"
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "source_commit": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40,
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "source_tree": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40,
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "route": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+        },
+        "signer": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "trust_revision": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20,
+          "pattern": "^(0|[1-9][0-9]{0,19})$"
+        },
+        "digest_profile": {
+          "type": "string",
+          "maxLength": 128,
+          "const": "maestro.raw-sha256/1"
+        },
+        "signature_profile": {
+          "type": "string",
+          "maxLength": 128,
+          "const": "maestro.ed25519-strict/1"
+        },
+        "files": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 4096,
+          "items": {
+            "$ref": "#/$defs/file"
+          }
+        },
+        "components": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 128,
+          "items": {
+            "$ref": "#/$defs/component"
+          }
+        },
+        "registry": {
+          "$ref": "#/$defs/reference"
+        },
+        "bootstrap": {
+          "$ref": "#/$defs/reference"
+        },
+        "catalog": {
+          "$ref": "#/$defs/reference"
+        },
+        "acceptance_policy": {
+          "$ref": "#/$defs/reference"
+        },
+        "migrations": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 0,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+          }
+        }
+      },
+      "required": [
+        "schema",
+        "version",
+        "source_commit",
+        "source_tree",
+        "route",
+        "signer",
+        "trust_revision",
+        "digest_profile",
+        "signature_profile",
+        "files",
+        "components",
+        "registry",
+        "bootstrap",
+        "catalog",
+        "acceptance_policy",
+        "migrations"
+      ]
+    },
+    "ReleaseSignature": {
+      "title": "ReleaseSignature",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "type": "string",
+          "maxLength": 128,
+          "const": "maestro.release.signature/1"
+        },
+        "public_key": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 43,
+          "pattern": "^[A-Za-z0-9_-]{43}$"
+        },
+        "signature": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 86,
+          "pattern": "^[A-Za-z0-9_-]{86}$"
+        }
+      },
+      "required": [
+        "schema",
+        "public_key",
+        "signature"
+      ]
+    },
+    "AcceptanceSignature": {
+      "title": "AcceptanceSignature",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "type": "string",
+          "maxLength": 128,
+          "const": "maestro.release.acceptance-signature/1"
+        },
+        "public_key": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 43,
+          "pattern": "^[A-Za-z0-9_-]{43}$"
+        },
+        "signature": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 86,
+          "pattern": "^[A-Za-z0-9_-]{86}$"
+        }
+      },
+      "required": [
+        "schema",
+        "public_key",
+        "signature"
+      ]
+    },
+    "TransitionSignature": {
+      "title": "TransitionSignature",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "type": "string",
+          "maxLength": 128,
+          "const": "maestro.trust.transition-signature/1"
+        },
+        "public_key": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 43,
+          "pattern": "^[A-Za-z0-9_-]{43}$"
+        },
+        "signature": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 86,
+          "pattern": "^[A-Za-z0-9_-]{86}$"
+        }
+      },
+      "required": [
+        "schema",
+        "public_key",
+        "signature"
+      ]
+    },
+    "TrustRoot": {
+      "title": "TrustRoot",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "type": "string",
+          "maxLength": 128,
+          "const": "maestro.trust.root/1"
+        },
+        "purpose": {
+          "type": "string",
+          "maxLength": 128,
+          "const": "maestro.distribution"
+        },
+        "public_key": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 43,
+          "pattern": "^[A-Za-z0-9_-]{43}$"
+        },
+        "fingerprint": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "revision": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20,
+          "pattern": "^(0|[1-9][0-9]{0,19})$"
+        },
+        "status": {
+          "type": "string",
+          "maxLength": 128,
+          "enum": [
+            "active",
+            "revoked"
+          ]
+        }
+      },
+      "required": [
+        "schema",
+        "purpose",
+        "public_key",
+        "fingerprint",
+        "revision",
+        "status"
+      ]
+    },
+    "TrustTransition": {
+      "title": "TrustTransition",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "type": "string",
+          "maxLength": 128,
+          "const": "maestro.trust.transition/1"
+        },
+        "purpose": {
+          "type": "string",
+          "maxLength": 128,
+          "const": "maestro.distribution"
+        },
+        "old_key": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 43
+        },
+        "new_key": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 43
+        },
+        "revision": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20,
+          "pattern": "^(0|[1-9][0-9]{0,19})$"
+        }
+      },
+      "required": [
+        "schema",
+        "purpose",
+        "old_key",
+        "new_key",
+        "revision"
+      ]
+    },
+    "ValidatorRegistry": {
+      "title": "ValidatorRegistry",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "type": "string",
+          "maxLength": 128,
+          "const": "maestro.validator.registry/1"
+        },
+        "validator": {
+          "type": "string",
+          "maxLength": 128,
+          "const": "maestro.validators/1"
+        },
+        "schemas": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 128,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+              },
+              "sha256": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64,
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "path": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$"
+              }
+            },
+            "required": [
+              "id",
+              "sha256",
+              "path"
+            ]
+          }
+        },
+        "profiles": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 128,
+          "items": {
+            "$ref": "#/$defs/reference"
+          }
+        },
+        "bindings": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 128,
+          "items": {
+            "$ref": "#/$defs/reference"
+          }
+        }
+      },
+      "required": [
+        "schema",
+        "validator",
+        "schemas",
+        "profiles",
+        "bindings"
+      ]
+    },
+    "RuntimeBootstrap": {
+      "title": "RuntimeBootstrap",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "type": "string",
+          "maxLength": 128,
+          "const": "maestro.runtime.bootstrap/1"
+        },
+        "runtime": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+        },
+        "database_schema": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+        },
+        "catalog_schema": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+        },
+        "minimum_policy": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+        },
+        "migrations": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 0,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+          }
+        }
+      },
+      "required": [
+        "schema",
+        "runtime",
+        "database_schema",
+        "catalog_schema",
+        "minimum_policy",
+        "migrations"
+      ]
+    },
+    "CompatibilityCatalog": {
+      "title": "CompatibilityCatalog",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "type": "string",
+          "maxLength": 128,
+          "const": "maestro.compatibility.catalog/1"
+        },
+        "entries": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 128,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "domain": {
+                "type": "string",
+                "maxLength": 128,
+                "enum": [
+                  "installation",
+                  "project"
+                ]
+              },
+              "source_contract": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+              },
+              "source_schema": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+              },
+              "source_profile": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+              },
+              "reader": {
+                "$ref": "#/$defs/reader"
+              },
+              "route": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+              },
+              "minimum_policy": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+              },
+              "capability": {
+                "type": "string",
+                "maxLength": 128,
+                "enum": [
+                  "historical_read",
+                  "current_state_read",
+                  "execute",
+                  "full_migration",
+                  "prospective_adoption"
+                ]
+              },
+              "implementation": {
+                "type": "array",
+                "minItems": 0,
+                "maxItems": 16,
+                "items": {
+                  "$ref": "#/$defs/reference"
+                }
+              },
+              "preconditions": {
+                "type": "array",
+                "minItems": 0,
+                "maxItems": 32,
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+                }
+              },
+              "postconditions": {
+                "type": "array",
+                "minItems": 0,
+                "maxItems": 32,
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+                }
+              },
+              "recovery": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+              }
+            },
+            "required": [
+              "domain",
+              "source_contract",
+              "source_schema",
+              "source_profile",
+              "reader",
+              "route",
+              "minimum_policy",
+              "capability",
+              "implementation",
+              "preconditions",
+              "postconditions",
+              "recovery"
+            ]
+          }
+        }
+      },
+      "required": [
+        "schema",
+        "entries"
+      ]
+    },
+    "AcceptancePolicy": {
+      "title": "AcceptancePolicy",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "type": "string",
+          "maxLength": 128,
+          "const": "maestro.release.acceptance-policy/1"
+        },
+        "signer": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "statement_schema": {
+          "type": "string",
+          "maxLength": 128,
+          "const": "maestro.release.acceptance/1"
+        },
+        "signature_profile": {
+          "type": "string",
+          "maxLength": 128,
+          "const": "maestro.ed25519-strict/1"
+        },
+        "required": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 5,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "capability": {
+                "type": "string",
+                "maxLength": 128,
+                "enum": [
+                  "historical_read",
+                  "current_state_read",
+                  "execute",
+                  "full_migration",
+                  "prospective_adoption"
+                ]
+              },
+              "cases": {
+                "type": "array",
+                "minItems": 0,
+                "maxItems": 128,
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+                }
+              }
+            },
+            "required": [
+              "capability",
+              "cases"
+            ]
+          }
+        }
+      },
+      "required": [
+        "schema",
+        "signer",
+        "statement_schema",
+        "signature_profile",
+        "required"
+      ]
+    },
+    "ReleaseAcceptance": {
+      "title": "ReleaseAcceptance",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "type": "string",
+          "maxLength": 128,
+          "const": "maestro.release.acceptance/1"
+        },
+        "release": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "entry": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "policy": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "route": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+        },
+        "case_set": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "outcome": {
+          "type": "string",
+          "maxLength": 128,
+          "enum": [
+            "pass",
+            "fail",
+            "error"
+          ]
+        },
+        "cases": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 128,
+          "items": {
+            "$ref": "#/$defs/case"
+          }
+        }
+      },
+      "required": [
+        "schema",
+        "release",
+        "entry",
+        "policy",
+        "route",
+        "case_set",
+        "outcome",
+        "cases"
+      ]
+    },
+    "ArtifactProfile": {
+      "title": "ArtifactProfile",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "type": "string",
+          "maxLength": 128,
+          "const": "maestro.artifact.profile/1"
+        },
+        "family": {
+          "type": "string",
+          "maxLength": 128,
+          "const": "maestro.fixture.json/1"
+        },
+        "stage": {
+          "type": "string",
+          "maxLength": 128,
+          "enum": [
+            "draft",
+            "accepted"
+          ]
+        },
+        "validator": {
+          "type": "string",
+          "maxLength": 128,
+          "const": "maestro.fixture-checker/1"
+        },
+        "required": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 3,
+          "items": {
+            "type": "string",
+            "maxLength": 128,
+            "enum": [
+              "parse",
+              "structure",
+              "integrity"
+            ]
+          }
+        },
+        "max_input_bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 16777216
+        },
+        "max_report_bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1048576
+        },
+        "max_duration_ms": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000
+        },
+        "max_diagnostics": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 32
+        },
+        "max_checks": {
+          "type": "integer",
+          "minimum": 3,
+          "maximum": 3
+        },
+        "configuration": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "required": [
+        "schema",
+        "family",
+        "stage",
+        "validator",
+        "required",
+        "max_input_bytes",
+        "max_report_bytes",
+        "max_duration_ms",
+        "max_diagnostics",
+        "max_checks",
+        "configuration"
+      ]
+    },
+    "JsonFixture": {
+      "title": "JsonFixture",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "type": "string",
+          "maxLength": 128,
+          "const": "maestro.fixture.json/1"
+        },
+        "value": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024
+        },
+        "dependencies": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 32,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+              },
+              "digest": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64,
+                "pattern": "^[0-9a-f]{64}$"
+              }
+            },
+            "required": [
+              "id",
+              "digest"
+            ]
+          }
+        }
+      },
+      "required": [
+        "schema",
+        "value",
+        "dependencies"
+      ]
+    },
+    "ValidationReport": {
+      "title": "ValidationReport",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "type": "string",
+          "maxLength": 128,
+          "const": "maestro.validation.report/1"
+        },
+        "binding": {
+          "$ref": "#/$defs/binding"
+        },
+        "checker": {
+          "type": "string",
+          "maxLength": 128,
+          "const": "maestro.fixture-checker/1"
+        },
+        "provenance": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "maxLength": 128,
+                  "const": "fresh"
+                }
+              },
+              "required": [
+                "kind"
+              ]
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "maxLength": 128,
+                  "const": "reused"
+                },
+                "source_receipt": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 64,
+                  "pattern": "^[0-9a-f]{64}$"
+                }
+              },
+              "required": [
+                "kind",
+                "source_receipt"
+              ]
+            }
+          ]
+        },
+        "checks": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 3,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "maxLength": 128,
+                "enum": [
+                  "parse",
+                  "structure",
+                  "integrity"
+                ]
+              },
+              "outcome": {
+                "type": "string",
+                "maxLength": 128,
+                "enum": [
+                  "pass",
+                  "fail",
+                  "error"
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "outcome"
+            ]
+          }
+        },
+        "outcome": {
+          "type": "string",
+          "maxLength": 128,
+          "enum": [
+            "pass",
+            "fail",
+            "error"
+          ]
+        },
+        "diagnostics": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 32,
+          "items": {
+            "$ref": "#/$defs/diagnostic"
+          }
+        },
+        "diagnostic_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 65536
+        },
+        "truncated": {
+          "type": "boolean"
+        },
+        "duration_ms": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000
+        },
+        "fresh_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "reused_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "repair_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 0
+        }
+      },
+      "required": [
+        "schema",
+        "binding",
+        "checker",
+        "provenance",
+        "checks",
+        "outcome",
+        "diagnostics",
+        "diagnostic_count",
+        "truncated",
+        "duration_ms",
+        "fresh_count",
+        "reused_count",
+        "repair_count"
+      ]
+    },
+    "ResourceProfile": {
+      "title": "ResourceProfile",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "type": "string",
+          "maxLength": 128,
+          "const": "maestro.resource.profile/1"
+        },
+        "max_bytes": {
+          "type": "integer",
+          "minimum": 16777216,
+          "maximum": 16777216
+        },
+        "max_depth": {
+          "type": "integer",
+          "minimum": 64,
+          "maximum": 64
+        },
+        "max_entries": {
+          "type": "integer",
+          "minimum": 65536,
+          "maximum": 65536
+        },
+        "max_string_bytes": {
+          "type": "integer",
+          "minimum": 1048576,
+          "maximum": 1048576
+        },
+        "max_files": {
+          "type": "integer",
+          "minimum": 4096,
+          "maximum": 4096
+        }
+      },
+      "required": [
+        "schema",
+        "max_bytes",
+        "max_depth",
+        "max_entries",
+        "max_string_bytes",
+        "max_files"
+      ]
+    },
+    "DshFile": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9@+._/-]*$"
+        },
+        "role": {
+          "type": "string",
+          "maxLength": 128,
+          "enum": [
+            "launcher",
+            "controller",
+            "gateway",
+            "plugin",
+            "dsh",
+            "node",
+            "schema",
+            "binding",
+            "validator",
+            "profile",
+            "bootstrap",
+            "catalog",
+            "lock",
+            "provenance",
+            "notice"
+          ]
+        },
+        "sha256": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "size": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20,
+          "pattern": "^(0|[1-9][0-9]{0,19})$"
+        },
+        "classification": {
+          "type": "string",
+          "maxLength": 128,
+          "enum": [
+            "executable",
+            "data"
+          ]
+        }
+      },
+      "required": [
+        "path",
+        "role",
+        "sha256",
+        "size",
+        "classification"
+      ]
+    },
+    "DshComponent": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "files": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 32768,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9@+._/-]*$"
+          }
+        },
+        "notices": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 128,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._/-]*$"
+          }
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        }
+      },
+      "required": [
+        "name",
+        "version",
+        "rationale",
+        "files",
+        "notices",
+        "source"
+      ]
+    },
+    "DshManifest": {
+      "title": "DshManifest",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "type": "string",
+          "maxLength": 128,
+          "const": "maestro.release.manifest.dsh/1"
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "source_commit": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40,
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "source_tree": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40,
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "route": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+        },
+        "signer": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "trust_revision": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20,
+          "pattern": "^(0|[1-9][0-9]{0,19})$"
+        },
+        "digest_profile": {
+          "type": "string",
+          "maxLength": 128,
+          "const": "maestro.raw-sha256/1"
+        },
+        "signature_profile": {
+          "type": "string",
+          "maxLength": 128,
+          "const": "maestro.ed25519-strict/1"
+        },
+        "files": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 32768,
+          "items": {
+            "$ref": "#/$defs/DshFile"
+          }
+        },
+        "components": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 128,
+          "items": {
+            "$ref": "#/$defs/DshComponent"
+          }
+        },
+        "registry": {
+          "$ref": "#/$defs/reference"
+        },
+        "bootstrap": {
+          "$ref": "#/$defs/reference"
+        },
+        "catalog": {
+          "$ref": "#/$defs/reference"
+        },
+        "acceptance_policy": {
+          "$ref": "#/$defs/reference"
+        },
+        "migrations": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 0,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]*$"
+          }
+        },
+        "resource_profile": {
+          "type": "string",
+          "maxLength": 128,
+          "const": "maestro.release.inventory.dsh/1"
+        },
+        "dsh_closure": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "dsh_lock": {
+          "$ref": "#/$defs/reference"
+        }
+      },
+      "required": [
+        "schema",
+        "version",
+        "source_commit",
+        "source_tree",
+        "route",
+        "signer",
+        "trust_revision",
+        "digest_profile",
+        "signature_profile",
+        "files",
+        "components",
+        "registry",
+        "bootstrap",
+        "catalog",
+        "acceptance_policy",
+        "migrations",
+        "resource_profile",
+        "dsh_closure",
+        "dsh_lock"
+      ]
+    },
+    "DshClosure": {
+      "title": "DshClosure",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "type": "string",
+          "maxLength": 128,
+          "const": "maestro.dsh.closure/1"
+        },
+        "profile": {
+          "type": "string",
+          "maxLength": 128,
+          "const": "maestro.release.inventory.dsh/1"
+        },
+        "lock_sha256": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "owner": {
+          "type": "string",
+          "maxLength": 128,
+          "const": "deepseek-harness"
+        },
+        "files": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 32768,
+          "items": {
+            "$ref": "#/$defs/DshFile"
+          }
+        }
+      },
+      "required": [
+        "schema",
+        "profile",
+        "lock_sha256",
+        "owner",
+        "files"
+      ]
+    },
+    "DshResourceProfile": {
+      "title": "DshResourceProfile",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "type": "string",
+          "maxLength": 128,
+          "const": "maestro.release.inventory.dsh/1"
+        },
+        "max_bytes": {
+          "type": "integer",
+          "minimum": 16777216,
+          "maximum": 16777216
+        },
+        "max_depth": {
+          "type": "integer",
+          "minimum": 64,
+          "maximum": 64
+        },
+        "max_entries": {
+          "type": "integer",
+          "minimum": 65536,
+          "maximum": 262144,
+          "const": 262144
+        },
+        "max_string_bytes": {
+          "type": "integer",
+          "minimum": 1048576,
+          "maximum": 1048576
+        },
+        "max_files": {
+          "type": "integer",
+          "minimum": 4096,
+          "maximum": 32768,
+          "const": 32768
+        },
+        "max_other_files": {
+          "type": "integer",
+          "minimum": 4096,
+          "maximum": 4096,
+          "const": 4096
+        }
+      },
+      "required": [
+        "schema",
+        "max_bytes",
+        "max_depth",
+        "max_entries",
+        "max_string_bytes",
+        "max_files",
+        "max_other_files"
+      ]
+    }
+  }
+}

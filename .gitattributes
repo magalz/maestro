@@ -1,0 +1,3 @@
+# Source snapshots, generated contracts and upstream notices use exact byte hashes.
+# Preserve their reviewed bytes during staging and checkout on every platform.
+* -text
