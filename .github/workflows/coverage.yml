@@ -1,4 +1,4 @@
-name: Setup-only coverage
+name: Foundation coverage
 
 on:
   push:
@@ -11,10 +11,11 @@ permissions:
   contents: read
 
 jobs:
-  setup-only-coverage:
+  foundation-coverage:
+    name: foundation-coverage
     if: github.actor != 'dependabot[bot]' && (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 30
     permissions:
       contents: read
       id-token: write
@@ -24,23 +25,41 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Install pinned Node and bundled npm
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .node-version
+          architecture: x64
+          package-manager-cache: false
+
       - name: Install matching Rust coverage tools
         run: rustup toolchain install 1.98.1 --profile minimal --component llvm-tools-preview --target x86_64-unknown-linux-gnu
 
-      - name: Measure existing development smoke execution
+      - name: Measure Rust and TypeScript foundation tests
         run: |
+          npm ci --ignore-scripts --no-audit --no-fund
           bash tools/coverage.sh
-          printf 'Setup-only development smoke coverage; shared contract tests are not measured by this job.\n' >> "$GITHUB_STEP_SUMMARY"
+          git diff --exit-code HEAD --
 
-      - name: Upload setup-only smoke coverage
+      - name: Retain exact coverage reports
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: foundation-coverage-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            coverage/rust.lcov
+            coverage/typescript.lcov
+          retention-days: 7
+          if-no-files-found: error
+
+      - name: Upload foundation coverage to Codecov Cloud
         uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
         with:
           use_oidc: true
           version: v11.3.1
-          files: coverage/setup-smoke.lcov
+          files: coverage/rust.lcov,coverage/typescript.lcov
           disable_search: true
           plugins: noop
-          flags: setup-only
-          name: development-smoke-setup-only
+          flags: foundation
+          name: rust-typescript-foundation
           override_commit: ${{ github.sha }}
           fail_ci_if_error: true

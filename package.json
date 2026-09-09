@@ -17,9 +17,10 @@
     "jsonc-parser": "3.3.1"
   },
   "devDependencies": {
-    "typescript": "6.0.3",
     "@types/node": "24.10.1",
-    "json-schema-to-typescript": "16.0.0"
+    "c8": "12.0.0",
+    "json-schema-to-typescript": "16.0.0",
+    "typescript": "6.0.3"
   },
   "packageManager": "npm@11.19.0",
   "engines": {

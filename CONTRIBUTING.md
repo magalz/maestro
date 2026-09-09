@@ -68,8 +68,9 @@ pass. A linked worktree is not an operating-system read-only boundary.
 Install the pinned tools and run `make install` and `make check` following
 [the development guide](docs/development.md). The repository includes shared
 Rust/TypeScript contract, release-admission and artifact-report tests; these
-foundation fixtures do not certify a supported distribution. The existing
-coverage upload still measures only the setup smoke binary. The [CI workflow](docs/ci.md) schedules
+foundation fixtures do not certify a supported distribution. The
+[coverage integrations](docs/coverage.md) report Rust/TypeScript foundation execution.
+The [CI workflow](docs/ci.md) schedules
 `development-checks` for PRs into and pushes to `dev` and `main`. Inspect its
 evaluated commit, PR head/base and run identity before treating a result as
 evidence. See [merge policy and verification status](docs/ci.md#merge-policy)
