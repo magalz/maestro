@@ -7,6 +7,10 @@ embedded schema text are excluded from analysis metrics; dependencies and
 private planning are outside source scope. These reports do not certify a
 production release or rendered GUI.
 
+Temporary target, node_modules, dist and coverage directories are explicitly
+excluded from source and dependency-manifest discovery. Committed lockfiles,
+including the reviewed DSH production lock, remain available for analysis.
+
 With the pinned Linux x86_64 toolchain and Node/npm installed:
 
 ```sh
@@ -71,6 +75,11 @@ failure, not a successful quality gate. Existing main analysis does not prove
 dev/current-PR analysis. Do not relabel feature revisions as main, change the
 subscription or weaken the quality gate to conceal failure. Human review and
 established merge policy remain in force.
+
+Until the first dev branch analysis is published, the service may use its
+existing main baseline while retaining dev as the PR target. The configured
+push analysis initializes the dev baseline when this integration is merged;
+do not confuse that baseline state with the analyzed PR's exact head SHA.
 
 Sources: [Rust instrumentation](https://doc.rust-lang.org/rustc/instrument-coverage.html),
 [LLVM export](https://llvm.org/docs/CommandGuide/llvm-cov.html#llvm-cov-export),
