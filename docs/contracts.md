@@ -40,8 +40,8 @@ probe and TypeScript consumer on hostile JSON, exact canonical bytes, schema and
 immutable-record rejection, strict signature vectors, bound reports, every
 inventoried file-role mutation, hard links/traversal, and external acceptance
 conflicts. These are bounded development tests, not exhaustive cryptographic
-conformance, platform certification or full Runtime acceptance. The existing
-coverage job still measures only the setup smoke executable.
+conformance, platform certification or full Runtime acceptance. The
+[coverage job](coverage.md) measures Rust/TypeScript foundation execution.
 
 ## Reviewable assembly and remaining work
 

@@ -1,82 +1,92 @@
-# Setup-only coverage
+# Foundation coverage and SonarCloud
 
-The coverage report measures genuine execution of the existing development
-smoke binary and its expected output. Only `tools/dev-smoke/src/main.rs` is
-included. Contract, release-admission and artifact-report tests now run separately
-through `npm test`, including both language consumers. They are not included in
-this coverage percentage. There are no repository-configured coverage thresholds
-or required coverage merge gates; Codecov defaults may produce advisory statuses.
-A high percentage for this three-line probe says nothing about
-Maestro product coverage.
+The foundation suite measures Rust and TypeScript consumers exercised by the
+existing cross-language tests, including the development smoke probe, contracts,
+release admission, controller, launcher and gateway. Generated bindings and
+embedded schema text are excluded from analysis metrics; dependencies and
+private planning are outside source scope. These reports do not certify a
+production release or rendered GUI.
 
-On the supported Linux x86_64 development environment, with Rust tools on PATH:
+Temporary target, node_modules, dist and coverage directories are explicitly
+excluded from source and dependency-manifest discovery. Committed lockfiles,
+including the reviewed DSH production lock, remain available for analysis.
+The ephemeral Sonar CI job also removes its ignored release-test fixtures after
+retaining reports, because dependency discovery may parse temporary manifests
+before applying exclusions. This does not clean the developer's workspace.
+
+With the pinned Linux x86_64 toolchain and Node/npm installed:
 
 ```sh
 rustup component add --toolchain 1.98.1 llvm-tools-preview
+npm ci --ignore-scripts --no-audit --no-fund
 bash tools/coverage.sh
 ```
 
-The script uses Rust 1.98.1 instrumentation and its matching native LLVM tools,
-checks the smoke output, and writes ignored `coverage/setup-smoke.lcov`. Each
-run creates and removes fresh temporary build/profile output so stale profiles
-are not merged. No cargo-llvm-cov dependency or fabricated test is needed.
+The script writes `coverage/rust.lcov` and `coverage/typescript.lcov`. Rust
+instrumentation includes binaries invoked by the shared suite. TypeScript
+coverage maps compiled execution back to original source files. Fresh profiles
+prevent stale executions from inflating later reports.
 
-`.github/workflows/coverage.yml` runs on pushes to `main`/`dev` and same-repository
-pull requests targeting those branches. Fork coverage reporting is unavailable
-in this initial integration; fork and Dependabot jobs are explicitly skipped
-because their token permissions differ. No stored Codecov or deployment secrets are used.
-The job has `contents: read` and `id-token: write` for GitHub OIDC authentication,
-uses an ephemeral hosted runner, and does not persist checkout credentials.
+## Codecov
 
-Uploads are labeled `setup-only` / `development-smoke-setup-only`. The explicit
-upload commit is the revision checked out by Actions (`github.sha`): the push
-commit or the PR merge revision, rather than silently labeling merge-revision
-coverage as PR-head coverage. Only the named LCOV file is uploaded; automatic
-report search and coverage plugins are disabled.
+`.github/workflows/coverage.yml` runs on main/dev pushes and same-repository PRs
+into those branches. Fork and Dependabot runs are skipped because upload
+permissions differ. GitHub OIDC authenticates the upload without a stored Codecov
+token. Only the two named LCOV reports are sent, with the foundation flag.
 
-Codecov action v7.0.0 is pinned to
-`fb8b3582c8e4def4969c97caa2f19720cb33a72f`, with CLI `v11.3.1` and upstream
-signature/checksum verification enabled. The CLI and verification key are still
-downloaded from the vendor at runtime. Checkout reuses verified v7.0.1 commit
-`3d3c42e5aac5ba805825da76410c181273ba90b1`.
+The configured destination is **Codecov Cloud**, using the action's default
+endpoint. No self-hosted endpoint or Cloudflare Tunnel URL is configured.
+The earlier PR #11 upload reached Codecov Cloud in
+[run 34410289350](https://github.com/magalz/maestro/actions/runs/34410289350),
+for evaluated merge SHA `cfbbcddf44c8f1a2ccb77d9a75cfeadb0cdb5b42`. That historical
+report measured only setup smoke, not foundation coverage. Upload success alone
+does not prove server-side processing completed.
 
-OIDC authentication supports uploads without a stored service token. Repository activation and report processing succeeded in
-[run 34162385388](https://github.com/magalz/maestro/actions/runs/34162385388).
-The [processed report](https://app.codecov.io/github/magalz/maestro/commit/f66ebed1a3f9c50784309be420b31748a58ceb7b)
-identifies tested merge `f66ebed1a3f9c50784309be420b31748a58ceb7b`,
-PR head `68cd9522d22c5450de8e6ca517249a89605dbbda`, base
-`79a99f060d28f2788522de7d7ccb3080892e9a1e`, and only
-`tools/dev-smoke/src/main.rs` (three executed lines). The API reports complete
-processing and an active repository. Do not infer
-activation from local coverage or only an uploader exit code. If the service
-requires account/app authorization, resolve that requirement with the owner.
-This workflow reports upload errors but is not a required merge check.
+Uploads identify the evaluated github.sha (PR merge revision or push commit).
+Before uploading, the workflow retains both reports as uniquely named Actions
+artifacts for seven days. After fixing a service/network error, rerun that
+coverage job; it regenerates the reports. Verify the evaluated SHA and execution
+identity. Upload-only recovery from retained reports must use their original
+SHA, not the latest branch head. An unrelated offline self-hosted service does
+not itself require this Cloud upload to be repeated.
 
-For failures, inspect the upload step and the linked Codecov commit's processing
-state. Fix the reported authentication/report issue, then rerun that intended
-workflow revision. Verify both a successful job and a processed report with its
-exact uploaded SHA; if the service remains queued or errored, acceptance is pending.
+The pinned Codecov action/CLI validates upstream downloads. Reporting has no
+repository-defined coverage threshold and is not a required merge check;
+service-provided statuses may still be advisory.
 
-Sonar targets the approved `maestro` project (`magalz_maestro`, organization
-`magalz`) on its `main` branch. `.github/workflows/sonar.yml` reuses this script
-and imports the same setup-only report through `sonar.rust.lcov.reportPaths`.
-Only `tools/dev-smoke/src` is analyzed; private planning files are outside the
-source scope. The scanner retains its default Clippy analysis.
+## SonarCloud
 
-Sonar runs only on pushes to `main` or manual dispatch on `main`; the job skips
-all other refs and has no PR trigger. The existing `SONAR_TOKEN` repository
-secret is passed only to the scan step. A preceding check tests only its
-presence and fails explicitly if missing, without printing the token.
+`.github/workflows/sonar.yml` uses the existing project `magalz_maestro` in
+organization `magalz`. It runs on main/dev pushes, same-repository PRs into those
+branches and explicit workflow dispatch restricted to main/dev. Fork and Dependabot analysis is skipped;
+there is no pull_request_target execution. Only the scanner receives the existing
+SONAR_TOKEN. A presence check fails explicitly if it is missing, and the scanner
+waits for the actual quality gate.
 
-The workflow waits for the quality gate with `sonar.qualitygate.wait=true`.
-The first hosted analysis, processed report, and actual quality gate remain
-pending until human-accepted promotion to `main`; local coverage generation
-does not complete this integration. No Sonar check is required in branch policy.
+`sonar-project.properties` defines Rust/TypeScript source and test scope, and
+imports both reports using `sonar.rust.lcov.reportPaths` and
+`sonar.javascript.lcov.reportPaths`. Full-history checkout uses the PR head for
+PR analysis; the scanner infers the number, branch and base from Actions metadata.
+Push/manual analysis uses its actual checked-out ref. Default Clippy analysis is
+retained. Reports are saved as Actions artifacts before scanning, independently
+of Codecov availability.
+
+The organization plan must allow the requested branch/PR analysis. SonarCloud's
+Free plan restricts PR analysis to the main branch; OSS provides unlimited branch
+and PR analysis. A plan, token or missing-baseline rejection is an integration
+failure, not a successful quality gate. Existing main analysis does not prove
+dev/current-PR analysis. Do not relabel feature revisions as main, change the
+subscription or weaken the quality gate to conceal failure. Human review and
+established merge policy remain in force.
+
+Until the first dev branch analysis is published, the service may use its
+existing main baseline while retaining dev as the PR target. The configured
+push analysis initializes the dev baseline when this integration is merged;
+do not confuse that baseline state with the analyzed PR's exact head SHA.
 
 Sources: [Rust instrumentation](https://doc.rust-lang.org/rustc/instrument-coverage.html),
 [LLVM export](https://llvm.org/docs/CommandGuide/llvm-cov.html#llvm-cov-export),
-[Codecov OIDC](https://github.com/codecov/codecov-action/blob/fb8b3582c8e4def4969c97caa2f19720cb33a72f/README.md#using-oidc),
-[Codecov action release](https://github.com/codecov/codecov-action/releases/tag/v7.0.0),
-[Codecov CLI release](https://github.com/codecov/codecov-cli/releases/tag/v11.3.1),
-[Sonar Rust coverage parameters](https://docs.sonarsource.com/sonarqube-cloud/enriching/test-coverage/test-coverage-parameters),
-[Sonar Rust analysis](https://docs.sonarsource.com/sonarqube-cloud/advanced-setup/languages/rust).
+[Codecov action](https://github.com/codecov/codecov-action),
+[Sonar coverage parameters](https://docs.sonarsource.com/sonarqube-cloud/analyzing-source-code/test-coverage/test-coverage-parameters),
+[Sonar PR analysis](https://docs.sonarsource.com/sonarqube-cloud/analyzing-source-code/pull-request-analysis),
+[Sonar plans](https://docs.sonarsource.com/sonarqube-cloud/administering-sonarcloud/managing-subscription/subscription-plans).
