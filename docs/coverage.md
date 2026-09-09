@@ -2,7 +2,9 @@
 
 The coverage report measures genuine execution of the existing development
 smoke binary and its expected output. Only `tools/dev-smoke/src/main.rs` is
-included. There are no product tests, repository-configured coverage thresholds
+included. Contract, release-admission and artifact-report tests now run separately
+through `npm test`, including both language consumers. They are not included in
+this coverage percentage. There are no repository-configured coverage thresholds
 or required coverage merge gates; Codecov defaults may produce advisory statuses.
 A high percentage for this three-line probe says nothing about
 Maestro product coverage.

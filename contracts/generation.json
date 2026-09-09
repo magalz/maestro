@@ -1,0 +1,6 @@
+{
+  "schema_sha256": "5343faa15bcd03d1d30fe607be5bab54e03c854be0f59d32ed35502f03c6881d",
+  "rust": "typify@0.7.0",
+  "typescript": "json-schema-to-typescript@16.0.0",
+  "validator": "maestro.validators/1"
+}

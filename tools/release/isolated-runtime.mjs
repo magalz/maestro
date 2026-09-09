@@ -1,0 +1,36 @@
+import assert from 'node:assert/strict';
+import {readFileSync,writeFileSync,mkdtempSync,existsSync} from 'node:fs';
+import {join,resolve} from 'node:path';
+import {spawnSync} from 'node:child_process';
+import {canonical,rawDigest} from '../../dist/packages/contracts/src/index.js';
+import {fixture} from './test-fixture.mjs';
+if(process.platform!=='win32')throw Error('This check is specifically native Windows development evidence');
+const directory=resolve(process.argv[2]),stage=join(directory,'staged'),result=JSON.parse(readFileSync(join(directory,'assembly-result.json')));
+const home=mkdtempSync(resolve('tools/release/target/isolated-runtime-'));
+const systemRoot=process.env.SystemRoot??'C:\\Windows';
+assert.equal(existsSync(join(systemRoot,'System32/libunwind.dll')),false,'Cannot attribute DLL lookup when system copy exists');
+const env={SystemRoot:systemRoot,WINDIR:systemRoot,PATH:join(systemRoot,'System32'),TEMP:home,TMP:home,HOME:home,USERPROFILE:home,DSH_HOME:home};
+const evidence={scope:'Native Windows development; system-only PATH and isolated home, no development sysroot',path:env.PATH,manifest:result.manifest,checks:[]};
+function run(executable,args,label,expected=0){
+ const child=spawnSync(executable,args,{cwd:home,env,encoding:'utf8',windowsHide:true,maxBuffer:2*1024*1024});
+ evidence.checks.push({label,executable,exit_code:child.status,stdout:child.stdout,stderr:child.stderr,error:child.error?.message});
+ writeFileSync(join(directory,'isolated-runtime.json'),JSON.stringify(evidence,null,2)+'\n');
+ assert.equal(child.status,expected,child.stderr||child.error?.message);return child.stdout;
+}
+const trust=[join(directory,'DEVELOPMENT-ONLY-root.json'),stage,join(directory,'REVIEWED-DSH-CLOSURE.json'),result.closure_sha256,result.lock_sha256];
+assert(run(join(stage,'maestro-launcher.exe'),trust,'actual staged launcher').includes(result.manifest));
+const gateway=[join(stage,'gateway.js')];
+assert(run(join(stage,'node.exe'),[...gateway,...trust],'actual staged gateway CLI').includes(result.manifest));
+const wrong=fixture();const wrongRoot=join(home,'wrong-root.json');writeFileSync(wrongRoot,wrong.root);
+run(join(stage,'node.exe'),[...gateway,wrongRoot,...trust.slice(1)],'gateway wrong trust',1);
+run(join(stage,'node.exe'),[...gateway,...trust.slice(0,3),'0'.repeat(64),trust[4]],'gateway wrong closure',1);
+const tampered=fixture(),tamperRoot=join(home,'tamper-root.json');writeFileSync(tamperRoot,tampered.root);writeFileSync(join(tampered.stage,'launcher.fixture'),'tampered');
+run(join(stage,'node.exe'),[...gateway,tamperRoot,resolve(tampered.stage)],'gateway tampered scratch inventory',1);
+const input=canonical({schema:'maestro.fixture.json/1',value:'isolated controller fixture',dependencies:[]}),profile=readFileSync(join(stage,'artifact-profile.json'));
+const binding={project:'development-fixture',scope:'isolated',subject:'fixture',revision:'1',input:rawDigest(input),dependencies:rawDigest(canonical([])),family:'maestro.fixture.json/1',stage:'draft',profile:rawDigest(profile),schema:'0'.repeat(64),validator:'0'.repeat(64),configuration:'0'.repeat(64),executor:'0'.repeat(64),environment:'0'.repeat(64)};
+writeFileSync(join(home,'input.json'),input);writeFileSync(join(home,'binding.json'),canonical(binding));
+const report=JSON.parse(run(join(stage,'maestro-controller.exe'),[join(home,'input.json'),join(stage,'artifact-profile.json'),join(home,'binding.json')],'actual staged controller'));
+assert.equal(report.outcome,'pass');
+run(join(stage,'node.exe'),[resolve('tools/release/activate-staged.mjs'),directory],'actual staged Node and captured managed bootstrap');
+evidence.status='pass';writeFileSync(join(directory,'isolated-runtime.json'),JSON.stringify(evidence,null,2)+'\n');
+console.log(JSON.stringify({status:evidence.status,manifest:result.manifest,checks:evidence.checks.map(v=>({label:v.label,exit_code:v.exit_code})),path:env.PATH},null,2));

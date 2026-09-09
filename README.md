@@ -1,13 +1,18 @@
 # Maestro
 
+Maestro source is licensed under [MPL-2.0](LICENSE), as specified by the approved
+public V1 product requirements. Third-party components retain their own licenses.
+
 Setup guides: [development](docs/development.md), [CI and protections](docs/ci.md),
 [security integrations](docs/security.md), [artifacts](docs/artifacts.md),
 [setup-only coverage](docs/coverage.md).
 
 Maestro's development repository: <https://github.com/magalz/maestro>.
-This repository contains a pinned local development baseline and a minimal Rust
-smoke probe. Follow [the development guide](docs/development.md) to install the
-toolchain and run the checks. No product application or product tests exist yet.
+This repository contains a pinned development baseline, generated Rust/TypeScript
+contracts, release-admission consumers and shared hostile-input tests. Follow
+[the development guide](docs/development.md) to run checks and
+[the contract guide](docs/contracts.md) for current scope and distribution blockers.
+The development candidate is not a usable or certified product distribution.
 The [CI workflow](docs/ci.md) runs `development-checks`.
 The [merge policy and verification status](docs/ci.md#merge-policy) distinguish
 the recorded protection configuration from observed enforcement. Both `main`

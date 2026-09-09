@@ -20,6 +20,9 @@ install: check-tools
 
 build: check-tools
 	cargo build --workspace --locked
+	npm run build
+	npm run check-generated
+	node tools/release/verify-notices.mjs
 
 format: check-tools
 	cargo fmt --all -- --check
@@ -28,8 +31,9 @@ lint: check-tools
 	cargo clippy --workspace --all-targets --locked -- -D warnings
 
 test: check-tools
-	@echo "No product tests exist. Running setup checks and the development smoke probe; this is not product coverage."
+	@echo "Running shared contract and synthetic release-admission vectors; this does not certify a distribution route."
 	sh tools/check-tool-errors.sh
 	cargo run --locked --package maestro-dev-smoke
+	npm test
 
 check: build format lint test

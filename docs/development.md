@@ -111,7 +111,25 @@ make check
 
 Build output stays under ignored `target/`; npm output, if any, stays under
 ignored `node_modules/`. Commit manifests and both lockfiles, never downloaded
-tools or generated output.
+tools or compiled output. Generated contract bindings under `crates/` and
+`packages/` are checked-in authoritative build outputs; `npm run check-generated`
+compares them without repairing a mismatch.
+
+## Authorized native Windows checks
+
+With the pinned Node distribution under `%LOCALAPPDATA%/maestro-toolchains/`
+and Rust `1.98.1-x86_64-pc-windows-gnullvm` installed, run:
+
+```powershell
+./tools/native-check.ps1
+```
+
+The helper selects the GNU LLVM linker and prepends the selected Rust sysroot's
+`bin` directory to its process PATH. Direct Rust executables require runtime DLLs
+there; omitting it can produce exit `3221225781` before main executes. No global
+PATH or machine toolchain setting is changed. The helper runs native builds,
+shared vectors, regeneration comparison, formatting and Clippy. This is native
+development evidence; Ubuntu CI and a production runtime route remain separate.
 
 ## Verify a separate clean checkout
 

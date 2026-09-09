@@ -2,7 +2,25 @@
   "name": "maestro-development",
   "version": "0.0.0",
   "private": true,
-  "description": "Development toolchain baseline; no JavaScript product source yet",
+  "description": "Maestro verified release and shared contract foundation",
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "node --test packages/contracts/test/*.test.mjs tools/release/build-inputs.test.mjs",
+    "generate": "node tools/contracts/generate.mjs",
+    "check-generated": "node tools/contracts/generate.mjs --check"
+  },
+  "dependencies": {
+    "@noble/curves": "2.4.0",
+    "ajv": "8.20.0",
+    "canonicalize": "5.0.0",
+    "jsonc-parser": "3.3.1"
+  },
+  "devDependencies": {
+    "typescript": "6.0.3",
+    "@types/node": "24.10.1",
+    "json-schema-to-typescript": "16.0.0"
+  },
   "packageManager": "npm@11.19.0",
   "engines": {
     "node": "24.20.0",

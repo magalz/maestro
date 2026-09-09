@@ -30,7 +30,7 @@ jobs:
       - name: Measure existing development smoke execution
         run: |
           bash tools/coverage.sh
-          printf 'Setup-only development smoke coverage; no product tests or coverage.\n' >> "$GITHUB_STEP_SUMMARY"
+          printf 'Setup-only development smoke coverage; shared contract tests are not measured by this job.\n' >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload setup-only smoke coverage
         uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0

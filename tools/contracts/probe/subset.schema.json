@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "maestro.probe.subset/1",
+  "title": "SubsetProbe",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["kind", "label", "count", "enabled", "empty", "items", "choice"],
+  "properties": {
+    "kind": { "type": "string", "const": "probe", "maxLength": 5 },
+    "label": { "type": "string", "minLength": 0, "maxLength": 32 },
+    "count": { "type": "integer", "minimum": -9007199254740991, "maximum": 9007199254740991 },
+    "enabled": { "type": "boolean" },
+    "empty": { "type": "null" },
+    "items": { "type": "array", "minItems": 0, "maxItems": 3, "items": { "$ref": "#/$defs/identifier" } },
+    "choice": {
+      "oneOf": [
+        { "type": "object", "additionalProperties": false, "required": ["tag", "value"], "properties": { "tag": { "type": "string", "const": "text", "maxLength": 4 }, "value": { "type": "string", "enum": ["a", "b"], "maxLength": 1 } } },
+        { "type": "object", "additionalProperties": false, "required": ["tag", "value"], "properties": { "tag": { "type": "string", "const": "number", "maxLength": 6 }, "value": { "type": "integer", "minimum": 0, "maximum": 10 } } }
+      ]
+    }
+  },
+  "$defs": { "identifier": { "type": "string", "minLength": 1, "maxLength": 16, "pattern": "^[A-Za-z][A-Za-z0-9_-]*$" } }
+}
