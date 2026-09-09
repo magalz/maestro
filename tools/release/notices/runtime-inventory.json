@@ -2,7 +2,7 @@
   "schema": "maestro.build.notice-inventory/1",
   "target": "x86_64-pc-windows-gnullvm",
   "cargo_lock_sha256": "b02cde5817b686562cd56ec35a45b99b4e54a143370c6fb19614785715259222",
-  "npm_lock_sha256": "082862c9ec4800bc7d0d986aa150b655dc79028daa90dc4ecd7a3f9014b453a7",
+  "npm_lock_sha256": "75eec4c1988da884ac1471d55a22d058ffdfce6e8a2114db083dd3a07ffa06c1",
   "scope": "Actual launcher/controller target dependency closure (normal/build edges), and npm production dependencies only; no redistribution clearance",
   "rust": [
     {

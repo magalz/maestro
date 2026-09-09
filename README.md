@@ -5,7 +5,7 @@ public V1 product requirements. Third-party components retain their own licenses
 
 Setup guides: [development](docs/development.md), [CI and protections](docs/ci.md),
 [security integrations](docs/security.md), [artifacts](docs/artifacts.md),
-[setup-only coverage](docs/coverage.md).
+[foundation coverage and SonarCloud](docs/coverage.md).
 
 Maestro's development repository: <https://github.com/magalz/maestro>.
 This repository contains a pinned development baseline, generated Rust/TypeScript

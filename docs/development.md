@@ -82,18 +82,18 @@ From the repository root, these are the entry points for local use and
 
 ```bash
 make install  # cargo fetch --locked; npm ci --ignore-scripts --no-audit --no-fund
-make build    # cargo build --workspace --locked
+make build    # Rust/TypeScript build, generated binding comparison and notices
 make format   # cargo fmt --all -- --check (does not rewrite source)
 make lint     # cargo clippy --workspace --all-targets --locked -- -D warnings
-make test     # tooling error checks; cargo run --locked --package maestro-dev-smoke
-make check    # build, format, lint and smoke execution
+make test     # tooling errors, smoke and shared Rust/TypeScript contract tests
+make check    # build, format, lint and tests
 ```
 
-`make test` explicitly reports that **no product tests exist**. It checks that
-missing tools and incorrect Rust, Cargo, Node and npm versions fail with actionable guidance,
-then executes the smoke binary. This is setup evidence, not product coverage. No JavaScript build,
-format, lint or test suite exists yet; npm only verifies the package/lock
-baseline. To fix Rust formatting, run `cargo fmt --all`, then `make format`.
+`make test` checks tool diagnostics, executes the smoke binary and runs shared
+Rust/TypeScript contract, release-admission and artifact-report tests. These
+foundation fixtures do not certify a product distribution. See
+[coverage and SonarCloud](coverage.md) for measured execution and hosted analysis.
+To fix Rust formatting, run `cargo fmt --all`, then `make format`.
 
 Confirm frozen installs leave manifests and lockfiles unchanged, twice:
 

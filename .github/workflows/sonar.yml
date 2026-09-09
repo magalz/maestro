@@ -1,8 +1,11 @@
-name: Setup-only Sonar analysis
+name: SonarCloud analysis
 
 on:
   push:
-    branches: [main]
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+    types: [opened, synchronize, reopened, edited, ready_for_review]
   workflow_dispatch:
 
 permissions:
@@ -10,9 +13,10 @@ permissions:
 
 jobs:
   sonar:
-    if: github.ref == 'refs/heads/main'
+    name: sonarcloud
+    if: github.actor != 'dependabot[bot]' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && (github.event_name != 'workflow_dispatch' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev')
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - name: Require Sonar authentication
         env:
@@ -27,15 +31,36 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
+
+      - name: Install pinned Node and bundled npm
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .node-version
+          architecture: x64
+          package-manager-cache: false
 
       - name: Install matching Rust analysis and coverage tools
         run: rustup toolchain install 1.98.1 --profile minimal --component llvm-tools-preview --component clippy --target x86_64-unknown-linux-gnu
 
-      - name: Measure existing development smoke execution
-        run: bash tools/coverage.sh
+      - name: Install locked dependencies and measure foundation coverage
+        run: |
+          npm ci --ignore-scripts --no-audit --no-fund
+          bash tools/coverage.sh
+          git diff --exit-code HEAD --
 
-      - name: Analyze setup source and wait for quality gate
+      - name: Retain exact analysis reports
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: sonar-coverage-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            coverage/rust.lcov
+            coverage/typescript.lcov
+          retention-days: 7
+          if-no-files-found: error
+
+      - name: Analyze Rust and TypeScript and wait for quality gate
         uses: SonarSource/sonarqube-scan-action@22918119ff8e1ca75a623e15c8296b6ea4fbe28f # v8.2.1
         with:
           scannerVersion: 8.1.0.6389
