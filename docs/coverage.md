@@ -10,6 +10,9 @@ production release or rendered GUI.
 Temporary target, node_modules, dist and coverage directories are explicitly
 excluded from source and dependency-manifest discovery. Committed lockfiles,
 including the reviewed DSH production lock, remain available for analysis.
+The ephemeral Sonar CI job also removes its ignored release-test fixtures after
+retaining reports, because dependency discovery may parse temporary manifests
+before applying exclusions. This does not clean the developer's workspace.
 
 With the pinned Linux x86_64 toolchain and Node/npm installed:
 

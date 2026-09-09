@@ -60,6 +60,12 @@ jobs:
           retention-days: 7
           if-no-files-found: error
 
+      - name: Remove transient test fixtures before dependency discovery
+        run: |
+          # Only ignored fixtures in this ephemeral CI checkout; retain reports and Rust build output.
+          git clean -fdX -- tools/release/target/
+          git diff --exit-code HEAD --
+
       - name: Analyze Rust and TypeScript and wait for quality gate
         uses: SonarSource/sonarqube-scan-action@22918119ff8e1ca75a623e15c8296b6ea4fbe28f # v8.2.1
         with:
