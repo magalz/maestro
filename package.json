@@ -20,7 +20,7 @@
     "@types/node": "24.10.1",
     "c8": "12.0.0",
     "json-schema-to-typescript": "16.0.0",
-    "typescript": "6.0.3"
+    "typescript": "7.0.2"
   },
   "packageManager": "npm@11.19.0",
   "engines": {
