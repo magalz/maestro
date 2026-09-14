@@ -9,7 +9,7 @@ maestro-contracts = { path = "../maestro-contracts" }
 serde_json = "=1.0.151"
 ed25519-dalek = "=3.0.0"
 curve25519-dalek = "=5.0.0"
-base64 = "=0.22.1"
+base64 = "=0.23.1"
 
 [target.'cfg(windows)'.dependencies]
 windows-sys = { version = "=0.61.2", features = ["Win32_Storage_FileSystem", "Win32_Foundation"] }
