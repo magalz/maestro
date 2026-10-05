@@ -13,7 +13,7 @@
   "dependencies": {
     "@noble/curves": "2.4.0",
     "ajv": "8.20.0",
-    "canonicalize": "5.0.0",
+    "canonicalize": "5.1.0",
     "jsonc-parser": "3.3.1"
   },
   "devDependencies": {
